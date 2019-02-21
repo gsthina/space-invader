@@ -1,14 +1,14 @@
 {
   "version": "1.0",
-  "name": "MyGame",
-  "description": "MyGame",
+  "name": "Space Invader",
+  "description": "A casual game made using cocos2d-js",
   "launch_path": "/index.html",
   "icons": {
     "128": "/res/icon.png"
   },
   "developer": {
-    "name": "Cocos2d-html5",
-    "url": "http://cocos2d-x.org/"
+    "name": "G Surendar Thina",
+    "url": "http://www.gsthina.me/"
   },
   "default_locale": "en",
   "installs_allowed_from": [
