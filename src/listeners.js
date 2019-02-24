@@ -127,3 +127,21 @@
 
 	    }
     });
+
+    var hoverHandler = cc.EventListener.create({
+		    event: cc.EventListener.MOUSE,
+		    onMouseMove: function (event) {
+		      var target = event.getCurrentTarget();
+		      var locationInNode = target.convertToNodeSpace(event.getLocation());
+		      var s = target.getContentSize();
+		      var rect = cc.rect(0, 0, s.width, s.height);
+		      if (cc.rectContainsPoint(rect, locationInNode)) {
+		        cc.log("It's hovering! x = " + locationInNode.x + ", y = " + locationInNode.y);
+		        target.opacity = 180;
+		        return true;
+		      } else {
+		        target.opacity = 255;
+		        return false;
+		      }
+		  }
+		});

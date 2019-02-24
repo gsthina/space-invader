@@ -43,7 +43,14 @@ var res = {
     alien_obj_5		: "res/objects/alien5.png",
     alien_obj_6		: "res/objects/alien6.png",
     missile_obj		: "res/objects/missile.png"
+
+    // title_font: {
+    //     type: "font",
+    //     name: "CaviarDreams",
+    //     srcs: ["res/fonts/CaviarDreams.ttf", "res/fonts/CaviarDreams.ttf"]
+    // }
 };
+
 
 var g_resources = [];
 for (var i in res) {

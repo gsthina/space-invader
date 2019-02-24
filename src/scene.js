@@ -24,8 +24,10 @@ var GamePlayScene = cc.Scene.extend({
         this._super();
         var layer = new GamePlayLayer();
         var bgLayer = new BackGroundLayer();
+        var infoLayer = new InfoLayer();
         this.addChild(bgLayer);
         this.addChild(layer);
+        this.addChild(infoLayer);
     }
 });
 
