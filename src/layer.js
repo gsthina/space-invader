@@ -156,6 +156,7 @@ var GamePlayLayer = cc.Layer.extend({
 	    			// self.schedule(self.runTimer, (TIMER + ALIEN.TRAVEL)); // Set timer
 	    			//register a schedule to scheduler
 					if(!self.dirty){
+						self.dirty = true;
 						self.runTimer(TIMER);
 					}
 	    			// this.unscheduleUpdate();
@@ -214,6 +215,8 @@ var GamePlayLayer = cc.Layer.extend({
 
 	},
 
+	info: InfoLayer,
+
 	endGame: function(){
 		this.timeup = true;
 		this.gameover = true;
@@ -221,6 +224,19 @@ var GamePlayLayer = cc.Layer.extend({
 	},
 
 	clearSpace: function(){
+		var self = this;
+		for (var i = 0; i < this.aliensArray.length; i++) {
+			this.aliensArray[i].runAction(
+				new cc.Sequence(
+					cc.scaleTo(0.1, 0.4),
+					cc.scaleTo(0.2, 0)
+				)
+			);
+			setTimeout(function() {self.killSprite( self.aliensArray[i] );}, 1000);
+		}
+
+		this.aliensArray = [];
+		this.bulletsArray = [];
 
 	},
 
@@ -778,24 +794,38 @@ var GamePlayLayer = cc.Layer.extend({
 
 
 var InfoLayer = cc.Layer.extend({
-	sprite 	: null,
-	dirty 	: false,
-	ctor	: function(){
+	sprite 		: null,
+	dirty 		: false,
+	gameDirt 	: false,
+	titleText 	: "",
+	subText 	: "",
+	ctor		: function(){
 		
 		this._super();
 		var size = cc.winSize;
 		var self = this;
+
+		if(!this.gameDirt){
+			this.gameDirt = true;
+			this.titleText = "Invade the Space";
+			this.subText = "\n Click to Play";
+		} else {
+			this.gameDirt = false;
+			this.dirty = false;
+			this.titleText = "Game Over";
+			this.subText = "\n Play Again";
+		}
 
 		this.sprite = new cc.Sprite(null);
 		this.sprite.setPosition(size.width / 2, size.height/2 + 50);
 		this.sprite.setScale(1);
 		this.addChild(this.sprite, 0);
 
-		var label = cc.LabelTTF.create("Invade the Space", "Courier New", 50);
+		var label = cc.LabelTTF.create(this.titleText, "Courier New", 50);
 		label.setPosition(0, 50);
 		this.sprite.addChild(label, 1); 
 		
-		var play_text = cc.LabelTTF.create("\n Click to Play", "Courier New", 20);
+		var play_text = cc.LabelTTF.create(this.subText, "Courier New", 20);
 		play_text.setPosition(0, 0);
 		this.sprite.addChild(play_text, 1); 
 

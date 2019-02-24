@@ -23,7 +23,7 @@ var QUAD = {
 	FOUR 		: 'Q4'
 }
 
-var TIMER = 60;
+var TIMER = 120;
 var SCORE = 1;
 
 var BULLET = {
