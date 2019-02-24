@@ -104,6 +104,7 @@ var GamePlayLayer = cc.Layer.extend({
 	gameover: false,
 	timeup: false,
 	dirty: false,
+	gun: null,
 	ctor: function(){
 
 		var size = cc.winSize;
@@ -120,18 +121,18 @@ var GamePlayLayer = cc.Layer.extend({
 
 		// GUN Sprite
 
-		var gun = new cc.Sprite.create(res.missile_obj);
-		gun.attr({
+		this.gun = new cc.Sprite.create(res.missile_obj);
+		this.gun.attr({
 			x: size.width/2,
 			y: -40,
 			rotation: -90,
 			scale: 0.3
 		});
-	    this.addChild(gun, 0);
+	    this.addChild(this.gun, 0);
 
 	    // GUN Action
 
-	    gun.runAction(
+	    this.gun.runAction(
 			new cc.Sequence(
 				cc.MoveTo.create( 1.95, cc.p( launch_position_x, 35 ) ),
 				cc.MoveTo.create( 0.05, cc.p( launch_position_x, 30 ) )
@@ -140,7 +141,7 @@ var GamePlayLayer = cc.Layer.extend({
 
 	    // GUN Listener
 
-	    cc.eventManager.addListener(gun_movement.clone(), gun );
+	    cc.eventManager.addListener(gun_movement.clone(), this.gun );
 
 	    // Shoot Listener
 
@@ -193,12 +194,6 @@ var GamePlayLayer = cc.Layer.extend({
 		// this.timeup = true;
 		var self = this;
 		this.updateScore(0);
-		this.timeText.runAction(
-	    	new cc.Sequence(
-				cc.scaleTo(0.1, 1.05),
-				cc.scaleTo(0.1, 1)
-			)
-		);
 		var incrementTime = function(){
 			if(parseInt(self.time)<=0){
 				clearInterval(interval);
@@ -206,6 +201,14 @@ var GamePlayLayer = cc.Layer.extend({
 				self.endGame();
 			} else {
 				self.time = (parseInt(self.time)-1).toString();
+				if(parseInt( self.time )<=20){
+					self.timeText.runAction(
+				    	new cc.Sequence(
+							cc.scaleTo(0.1, 1.2),
+							cc.scaleTo(0.2, 1)
+						)
+					);
+				}
 				(parseInt(self.time)>9)?self.timeText.setString("Time: " + self.time.toString()):self.timeText.setString("Time: " + "0"+self.time.toString());
 			}
 		}
@@ -218,6 +221,32 @@ var GamePlayLayer = cc.Layer.extend({
 	info: InfoLayer,
 
 	endGame: function(){
+		this.sprite = new cc.Sprite(null);
+		this.sprite.setPosition(this.size.width / 2, this.size.height/2 + 50);
+		this.sprite.setScale(0);
+		this.addChild(this.sprite, 0);
+
+		var label = cc.LabelTTF.create("Thank you!", "Courier New", 50, cc.TEXT_ALIGNMENT_CENTER);
+		label.setPosition(0, 60);
+		this.sprite.addChild(label, 1); 
+		
+		var play_text = cc.LabelTTF.create("Please share your score and feedbacks! \n \n Reload to Invade the Space!", "Courier New", 20, cc.TEXT_ALIGNMENT_CENTER);
+		play_text.setPosition(0, -10);
+		this.sprite.addChild(play_text, 1); 
+
+		// this.sprite.runAction(cc.MoveTo.create(2, cc.p( size.width/2, size.height/2 + 50 )));
+		this.sprite.runAction(
+	    	new cc.Sequence(
+				cc.scaleTo(0.1, 1.05),
+				cc.scaleTo(0.1, 1)
+			)
+		);
+
+		this.gun.runAction(
+			new cc.Sequence(
+				cc.MoveTo.create(0.1, cc.p(this.size.width/2, -40))
+			)
+		);
 		this.timeup = true;
 		this.gameover = true;
 		this.clearSpace();
@@ -225,6 +254,7 @@ var GamePlayLayer = cc.Layer.extend({
 
 	clearSpace: function(){
 		var self = this;
+		this.unscheduleAllCallbacks();
 		for (var i = 0; i < this.aliensArray.length; i++) {
 			this.aliensArray[i].runAction(
 				new cc.Sequence(
@@ -237,6 +267,8 @@ var GamePlayLayer = cc.Layer.extend({
 
 		this.aliensArray = [];
 		this.bulletsArray = [];
+
+		new InfoLayer().ctor();
 
 	},
 
@@ -285,8 +317,6 @@ var GamePlayLayer = cc.Layer.extend({
 						// this.aliensArray.splice(j, 1);
 
 						this.killAlienSprite(this.aliensArray[j], j);
-
-						this.updateScore(SCORE);
 
 						this.killSprite(this.bullet);
 						this.bulletsArray = [];
@@ -355,6 +385,7 @@ var GamePlayLayer = cc.Layer.extend({
 	},
 
 	killAlienSprite: function(sprite, index){
+		this.updateScore(SCORE);
 		this.aliensArray.splice(index, 1);
 		this.removeChild(sprite);
 	},
@@ -413,6 +444,8 @@ var GamePlayLayer = cc.Layer.extend({
 
 		var bullet;
 
+if(!this.gameover){
+
 		if (this.bullet!=null){
 			this.bullet = null;
 		} else {
@@ -429,7 +462,6 @@ var GamePlayLayer = cc.Layer.extend({
 		});
 
 		this.addChild(bullet, 1);
-
 		// cc.log(bullet, cc.p( this.touch.getLocation().x, this.touch.getLocation().y ));
 
 		bullet.runAction(
@@ -452,13 +484,13 @@ var GamePlayLayer = cc.Layer.extend({
 			// self.removeChild(self.bullet); // remove sprite of layer
 			cc.log("UNSCHEDULE");
 			self.unscheduleUpdate();
-			cc.log(self.bullet, bullet);
+			// cc.log(self.bullet, bullet);
          //layer.removeChildByTag(1); // remove sprite by tag
          //layer.removeAllChildren(); // remove all children
          //layer.removeFromParent(); // remove from parent
         }, BULLET.LIFETIME*1000); // after 20 seconds
 
-        var self = this;
+}
 
 						// setTimeout(function(){
 						// 	cc.log("UNSCHEDULE");
@@ -808,7 +840,7 @@ var InfoLayer = cc.Layer.extend({
 		if(!this.gameDirt){
 			this.gameDirt = true;
 			this.titleText = "Invade the Space";
-			this.subText = "\n Click to Play";
+			this.subText = "\n \n IMP: Use one bullet per kill \n \n (Note: This Game is under construction) \n \n Click to Play ";
 		} else {
 			this.gameDirt = false;
 			this.dirty = false;
@@ -821,12 +853,12 @@ var InfoLayer = cc.Layer.extend({
 		this.sprite.setScale(1);
 		this.addChild(this.sprite, 0);
 
-		var label = cc.LabelTTF.create(this.titleText, "Courier New", 50);
-		label.setPosition(0, 50);
+		var label = cc.LabelTTF.create(this.titleText, "Courier New", 50, cc.TEXT_ALIGNMENT_CENTER);
+		label.setPosition(0, 60);
 		this.sprite.addChild(label, 1); 
 		
-		var play_text = cc.LabelTTF.create(this.subText, "Courier New", 20);
-		play_text.setPosition(0, 0);
+		var play_text = cc.LabelTTF.create(this.subText, "Courier New", 20, cc.TEXT_ALIGNMENT_CENTER);
+		play_text.setPosition(0, -10);
 		this.sprite.addChild(play_text, 1); 
 
 		// this.sprite.runAction(cc.MoveTo.create(2, cc.p( size.width/2, size.height/2 + 50 )));

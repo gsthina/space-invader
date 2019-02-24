@@ -80,6 +80,8 @@
 		    	target.x = 10;
 		    }
 		    launch_position_x = target.x;
+		    // new GamePlayLayer().launchBullet(touch, event);
+	    	// cc.log("GUN MOVED");
 		    // target.y += delta.y;
 	    },
 		//Process the touch end event
