@@ -105,6 +105,8 @@ var GamePlayLayer = cc.Layer.extend({
 	timeup: false,
 	dirty: false,
 	gun: null,
+	healthLabel: "",
+	bulletLimit: BULLET.LIMIT,
 	ctor: function(){
 
 		var size = cc.winSize;
@@ -153,11 +155,13 @@ var GamePlayLayer = cc.Layer.extend({
 	    	onTouchBegan: function(touch, event){
 	    		if(!this.gameover){
 	    			self.launchBullet(touch, event);
-	    			self.schedule(self.launchAlien, ALIEN.FREQENCY); // Scheduling the aliens fall in every ALIEN.FREQENCY (seconds per object)	    			
+	    			self.schedule(self.launchAlien, ALIEN.FREQENCY); // Scheduling the aliens fall in every ALIEN.FREQENCY (seconds per object)
+	    			self.schedule(self.updateUserHealth);
 	    			// self.schedule(self.runTimer, (TIMER + ALIEN.TRAVEL)); // Set timer
 	    			//register a schedule to scheduler
 					if(!self.dirty){
 						self.dirty = true;
+						self.loadBullets(self.bulletLimit);
 						self.runTimer(TIMER);
 					}
 	    			// this.unscheduleUpdate();
@@ -185,6 +189,14 @@ var GamePlayLayer = cc.Layer.extend({
 		this.timeText.setPosition(this.size.width*0.8, this.size.height*0.9);
 		this.addChild(this.timeText, 1);
 
+		this.healthLabel = cc.LabelTTF.create("Health: " + USER.HEALTH_PERCENT, "Courier New", "30", cc.TEXT_ALIGNMENT_CENTER);
+		this.healthLabel.setPosition(this.size.width*0.8, this.size.height*0.1);
+		this.addChild(this.healthLabel, 1);
+
+	},
+
+	loadBullets: function(limit){
+		
 	},
 
 	time: "00",
@@ -256,10 +268,12 @@ var GamePlayLayer = cc.Layer.extend({
 		var self = this;
 		this.unscheduleAllCallbacks();
 		for (var i = 0; i < this.aliensArray.length; i++) {
+			this.aliensArray[i].runAction(cc.MoveTo.create(1, cc.p(this.size.width/2, this.size.height)));
 			this.aliensArray[i].runAction(
 				new cc.Sequence(
 					cc.scaleTo(0.1, 0.4),
-					cc.scaleTo(0.2, 0)
+					cc.scaleTo(0.2, 0.1),
+					cc.scaleTo(1, 0)
 				)
 			);
 			setTimeout(function() {self.killSprite( self.aliensArray[i] );}, 1000);
@@ -273,6 +287,8 @@ var GamePlayLayer = cc.Layer.extend({
 	},
 
 	alien: null,
+	powerDirt: false,
+	scoreDirt: false,
 
 	update: function(dt){
 
@@ -284,23 +300,10 @@ var GamePlayLayer = cc.Layer.extend({
 
 		var tempTouch = cc.p(0,0);
 
-
-
-		// if (this.bullet.getPosition().x>this.size.width/2){
-		// 	if (this.bullet.getPosition().y>this.size.height/2){
-		// 		this.drainSprite(this.bullet, QUAD.ONE);
-		// 	} else {
-		// 		this.drainSprite(this.bullet, QUAD.FOUR);
-		// 	}
-		// } else {
-		// 	if (this.bullet.getPosition().y>this.size.height/2){
-		// 		this.drainSprite(this.bullet, QUAD.TWO);
-		// 	} else {
-		// 		this.drainSprite(this.bullet, QUAD.THREE);
-		// 	}
-		// }
+		var self = this;
 
 				for (var j = 0; j < this.aliensArray.length; j++) {
+
 
 					if (cc.rectContainsPoint(this.aliensArray[j].getBoundingBox(), touchPos)){
 						
@@ -308,51 +311,68 @@ var GamePlayLayer = cc.Layer.extend({
 
 						this.bulletHide = true;
 
-						this.aliensArray[j].runAction(
-							new cc.Sequence(
-								cc.scaleTo(0.1, 0.4),
-								cc.scaleTo(0.2, 0)
-							)
-						);
-						// this.aliensArray.splice(j, 1);
+						// ALIEN STRENGTH
 
-						this.killAlienSprite(this.aliensArray[j], j);
+						if (this.aliensArray[j].strength>0){ 
+
+							// REDUNDANCE STRENGTH CHECK
+
+							if(!this.powerDirt){
+
+								this.powerDirt = true;
+
+								cc.log("ALIEN : ", j , " : POWER : ", this.aliensArray[j].strength);
+							
+								var sc = this.aliensArray[j].strength - 1;
+								this.aliensArray[j].strength = sc;
+								// this.aliensArray[j].setScale(sc*0.01);
+								this.aliensArray[j].runAction(
+									new cc.Sequence(
+										cc.scaleTo(0.1, 0.1),
+										cc.scaleTo(0.1, sc/10)
+									)
+								);
+							} else {
+								this.powerDirt = (this.aliensArray[j].strength>1) ? true : false;
+							}
+						
+						} else {
+
+							// IF ALIEN STRENGTH == 0
+							
+							this.aliensArray[j].runAction(
+								new cc.Sequence(
+									cc.scaleTo(0.1, 0.2),
+									cc.scaleTo(0.2, 0)
+								)
+							);
+							// this.aliensArray.splice(j, 1);
+							setTimeout(function() {
+								if(!self.scoreDirt){
+									self.scoreDirt = true;
+									self.killAlienSprite(self.aliensArray[j], j);
+									cc.log("SCORE: ", SCORE);
+									self.updateScore(SCORE);
+								}
+							}, 300);
+
+						}
+
+
 
 						this.killSprite(this.bullet);
+						
 						this.bulletsArray = [];
 
-
-						// this.bulletsArray.pop();
-						// this.aliensArray.pop();
 					}else if(!this.bulletHide){
 						cc.log("Not Hit!");
-
-						// this.killSprite(this.bullet);
-
-						// if (this.bullet.getPosition().x>this.size.width/2){
-						// 	if (this.bullet.getPosition().y>this.size.height/2){
-						// 		this.drainSprite(this.bullet, QUAD.ONE);
-						// 	} else {
-						// 		this.drainSprite(this.bullet, QUAD.FOUR);
-						// 	}
-						// } else {
-						// 	if (this.bullet.getPosition().y>this.size.height/2){
-						// 		this.drainSprite(this.bullet, QUAD.TWO);
-						// 	} else {
-						// 		this.drainSprite(this.bullet, QUAD.THREE);
-						// 	}
-						// }
-
-						// this.bullet.setPosition(cc.p(0,0));
-						// this.bulletsArray = this.removeByAttr(this.bulletsArray, 'position', this.bulletsArray[i].getPosition());
-						// this.bulletsArray = this.bulletsArray.splice(i,1);
-						// this.bulletsArray.pop();
-						// cc.log("Not Hit!");
 					}
 
 				}
 
-				
+				// USER HEALTH
+
+
 
 		// var point = this.bullet.getPosition();
 
@@ -366,6 +386,32 @@ var GamePlayLayer = cc.Layer.extend({
 
 	 //    this.bullet.setPosition(cc.p(x, y));
 
+	},
+
+	updateUserHealth: function(){
+		var damage = 0;
+		// USER.HEALTH = USER.HEALTH_UNITS_GIVEN;
+		for (var j = 0; j < this.aliensArray.length; j++) {
+			// USER HEALTH UPDATE
+			if(this.aliensArray[j].y <= 0){
+				damage = this.aliensArray[j].strength;
+				// cc.log("User health update", damage, this.aliensArray[j].y );
+				// cc.log("Sprite pos after intrusion", this.aliensArray[j].y );
+				USER.HEALTH_UNITS_GIVEN -= damage;
+				this.updateHealthText(USER.HEALTH_UNITS_GIVEN);
+				this.killSprite(this.aliensArray[j]);
+				this.aliensArray.splice(j, 1);
+			}
+		}
+
+	},
+
+	updateHealthText: function(health){
+		this.healthLabel.setString("Health: " + health.toString());
+		if(health<=0){
+			this.healthLabel.setString("Health: 0");
+			this.endGame();
+		}
 	},
 
 	removeByAttr: function(array, attr, value){
@@ -385,7 +431,6 @@ var GamePlayLayer = cc.Layer.extend({
 	},
 
 	killAlienSprite: function(sprite, index){
-		this.updateScore(SCORE);
 		this.aliensArray.splice(index, 1);
 		this.removeChild(sprite);
 	},
@@ -438,6 +483,9 @@ var GamePlayLayer = cc.Layer.extend({
 		this.touch = touch;
 		this.event = event;
 
+		this.powerDirt = false;
+		this.scoreDirt = false;
+
 		var self = this;
 
 		// Bullet 
@@ -459,15 +507,17 @@ if(!this.gameover){
 	    	y 		: 0,
 			time 	: BULLET.TRAVEL_TIME,
 			scale 	: 0.15
+			// strength: 3
 		});
 
 		this.addChild(bullet, 1);
 		// cc.log(bullet, cc.p( this.touch.getLocation().x, this.touch.getLocation().y ));
-
+		var travelTime = self.touch.getLocation().y / (bullet.time * 1000);
+		cc.log("Bullet Travel Time :: ",  travelTime);
 		bullet.runAction(
 			new cc.Sequence(
 				cc.MoveTo.create( 0.05, cc.p( launch_position_x, 60 ) ),
-				cc.MoveTo.create( bullet.time, cc.p( self.touch.getLocation().x, self.touch.getLocation().y ) ),
+				cc.MoveTo.create( travelTime, cc.p( self.touch.getLocation().x, self.touch.getLocation().y ) ),
 				cc.FadeTo.create(0.2, 0)
 			)
 		);
@@ -538,14 +588,16 @@ if(!this.gameover){
 		var self = this;
 
 		var xPos =  Math.random() * ((size.width-10) - 10) + 10;
+		var power = 1 + Math.round(Math.random() * (ALIEN.MAX_POWER - ALIEN.MIN_POWER) + ALIEN.MIN_POWER);
 
 		this.alien = new cc.Sprite.create(aliens[Math.round(Math.random() * (ALIEN.MAX - ALIEN.MIN) + ALIEN.MIN)]);
 		this.alien.attr({
 			x: xPos,
 			y: size.height,
 			rotation: 0,
-			scale: 0.3,
-			time: ALIEN.TRAVEL - (Math.random() * (ALIEN.MAX - ALIEN.MIN) + ALIEN.MIN)
+			scale: power * 0.1,
+			time: ALIEN.TRAVEL - power - (Math.random() * (ALIEN.MAX - ALIEN.MIN) + ALIEN.MIN),
+			strength: power
 		});
 
 		if(!this.timeup){
@@ -566,6 +618,21 @@ if(!this.gameover){
 	         //layer.removeFromParent(); // remove from parent
 	         }, ALIEN.TRAVEL); // after 20 seconds
 
+	},
+
+	alienAnimation: function(dt){
+		var self = this;
+		for (var i = 0; i < this.aliensArray.length; i++) {
+			setInterval(function(){
+				var rotation = (i%2!=0)?-20:20;
+				self.aliensArray[i].runAction(
+					new cc.Sequence(
+						cc.RotateBy.create(0.03, rotation)
+						// cc.RotateBy.create(0.03, -5)
+					)
+				);
+			}, 500);
+		}
 	},
 
 	createShotFocus: function(position){
