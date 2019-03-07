@@ -25,9 +25,14 @@ var GamePlayScene = cc.Scene.extend({
         var layer = new GamePlayLayer();
         var bgLayer = new BackGroundLayer();
         var infoLayer = new InfoLayer();
+        var controlsLayer = new ControlsLayer();
+        // var focusLayer = new FocusLayer();
         this.addChild(bgLayer);
         this.addChild(layer);
         this.addChild(infoLayer);
+        this.addChild(controlsLayer);
+        // this.addChild(focusLayer);
+
     }
 });
 

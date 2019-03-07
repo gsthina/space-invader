@@ -1,5 +1,5 @@
 var x, y, end, start;
-function getNextPointFromLine(p2, p1, dt) {
+function getNextPointFromLine(p2, p1, y, dt) {
 	
 	// Linear equations - Two point form - https://www.mathportal.org/calculators/analytic-geometry/two-point-form-calculator.php
 
@@ -27,10 +27,9 @@ function getNextPointFromLine(p2, p1, dt) {
 			// 	y = p1.y-dt;
 			// }
 
-			cc.log(p2, p1, dt);
-			for (var i = 0; i < 100000; i++) {
-				x = (((p2.x - p1.x)/(p2.y - p1.y))*(p2.y+i - p1.y)) + p1.x;
-			}
+			x = (((p2.x - p1.x)/(p2.y - p1.y))*(y - p1.y)) + p1.x;
+
+			// cc.log(p2, p1, cc.p(x, y), dt);
 
 		// }
 

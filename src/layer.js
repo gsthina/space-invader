@@ -48,9 +48,51 @@ var MainMenuLayer = cc.Layer.extend({
     }
 });
 
+var FocusLayer = cc.Layer.extend({
+	
+	sniper 	: null,
+
+	size 	: cc.winSize,
+
+	ctor 	: function(){
+
+		this._super();
+
+		cc.log("FocusLayer :: ctor");
+
+	},
+
+	create: function(){
+
+		cc.log("FocusLayer :: create");
+
+		this.sniper = new cc.Sprite.create(res.sniper_point);
+
+		this.sniper.attr({
+			x: this.size.width/2,
+			y: this.size.height/2,
+			scale: 0.5,
+			zIndex: 5
+		});
+
+		this.addChild(this.sniper);
+
+		cc.eventManager.addListener(free_focus_listener.clone(), this);
+
+		
+	},
+
+	getSniperPosition: function(){
+		cc.log(this.sniper);
+		return this.sniper.getPosition();
+	}
+});
+
 var BackGroundLayer = cc.Layer.extend({
 	sprite 	: null,
+	focus 	: null,
 	ctor	: function(){
+
 		this._super();
 		var size = cc.winSize;
 		this.sprite = new cc.Sprite(res.background_img);
@@ -99,15 +141,50 @@ var BackGroundLayer = cc.Layer.extend({
 	}
 });
 
+var ControlsLayer = cc.Layer.extend({
+	
+	button: null,
+
+	size : cc.winSize,
+ 
+	ctor: function(){
+
+		cc.log("ControlsLayer :: ctor");
+
+		this._super();
+
+		// this.button = new cc.Sprite.create(res.launch_button_2);
+		// this.button.attr({
+		// 	x: this.size.width*0.2, 
+		// 	y: this.size.height*0.1,
+		// 	zIndex: 5,
+		// 	scale: 0.5
+		// });
+		// this.addChild(this.button);
+
+
+
+	},
+
+	load: function(){
+
+	}
+})
+
 
 var GamePlayLayer = cc.Layer.extend({
 	gameover: false,
 	timeup: false,
 	dirty: false,
 	gun: null,
+	earth: null,
 	healthLabel: "",
-	bulletLimit: BULLET.LIMIT,
+	bulletLimit: 0,
+	controls: null,
+	button: null,
 	ctor: function(){
+
+		this.bulletLimit = BULLET.LIMIT;
 
 		var size = cc.winSize;
 
@@ -121,12 +198,32 @@ var GamePlayLayer = cc.Layer.extend({
 
 	    launch_position_x = size.width/2;
 
+	    // EARTH Sprite
+
+	  //   this.earth = new cc.Sprite.create(res.earth_obj_3);
+	  //   this.earth.attr({
+	  //   	x: size.width/2,
+			// y: -500,
+			// scale: 1
+	  //   });
+	  //   this.addChild(this.earth, 0);
+
+	    // EARTH Action
+
+	 //    this.earth.runAction(
+		// 	new cc.Sequence(
+		// 		cc.MoveTo.create( 1.95, cc.p( launch_position_x, 35 ) ),
+		// 		cc.MoveTo.create( 0.05, cc.p( launch_position_x, 30 ) )
+		// 	)
+		// );
+
+
 		// GUN Sprite
 
 		this.gun = new cc.Sprite.create(res.missile_obj);
 		this.gun.attr({
 			x: size.width/2,
-			y: -40,
+			y: size.height/2,
 			rotation: -90,
 			scale: 0.3
 		});
@@ -134,18 +231,35 @@ var GamePlayLayer = cc.Layer.extend({
 
 	    // GUN Action
 
-	    this.gun.runAction(
-			new cc.Sequence(
-				cc.MoveTo.create( 1.95, cc.p( launch_position_x, 35 ) ),
-				cc.MoveTo.create( 0.05, cc.p( launch_position_x, 30 ) )
-			)
-		);
+	 //    this.gun.runAction(
+		// 	new cc.Sequence(
+		// 		cc.MoveTo.create( 1.95, cc.p( launch_position_x, 35 ) ),
+		// 		cc.MoveTo.create( 0.05, cc.p( launch_position_x, 30 ) )
+		// 	)
+		// );
 
 	    // GUN Listener
 
 	    cc.eventManager.addListener(gun_movement.clone(), this.gun );
 
-	    // Shoot Listener
+	    // Load Controls
+
+	    // this.controls = new ControlsLayer();
+
+	 //    this.button = new cc.Sprite.create(res.launch_button_2);
+		// this.button.attr({
+		// 	x: this.size.width*0.2, 
+		// 	y: this.size.height*0.1,
+		// 	zIndex: 5,
+		// 	scale: 0.5
+		// });
+		// this.addChild(this.button);
+
+		// this.setFocusAtCenter();
+
+		
+
+	    // Shoot Listener for Button
 
 	    var shoot_listener = cc.EventListener.create({
 
@@ -195,8 +309,18 @@ var GamePlayLayer = cc.Layer.extend({
 
 	},
 
-	loadBullets: function(limit){
+	setFocusAtCenter: function(){
 		
+		// SHOT FOCUS
+
+		// this.focus = new FocusLayer();
+		// this.addChild(this.focus);
+		// this.focus.create();
+
+	},
+
+	loadBullets: function(limit){
+
 	},
 
 	time: "00",
@@ -305,7 +429,7 @@ var GamePlayLayer = cc.Layer.extend({
 				for (var j = 0; j < this.aliensArray.length; j++) {
 
 
-					if (cc.rectContainsPoint(this.aliensArray[j].getBoundingBox(), touchPos)){
+					if (cc.rectContainsPoint(this.aliensArray[j].getBoundingBox(), touchPos)) {// || cc.rectContainsPoint(this.aliensArray[j].getBoundingBox(), this.earth.getBoundingBox())){
 						
 						cc.log("Hit!");
 
@@ -333,7 +457,7 @@ var GamePlayLayer = cc.Layer.extend({
 									)
 								);
 							} else {
-								this.powerDirt = (this.aliensArray[j].strength>1) ? true : false;
+								this.powerDirt = (this.aliensArray[j].strength>0) ? true : false;
 							}
 						
 						} else {
@@ -346,13 +470,13 @@ var GamePlayLayer = cc.Layer.extend({
 									cc.scaleTo(0.2, 0)
 								)
 							);
+
 							// this.aliensArray.splice(j, 1);
 							setTimeout(function() {
 								if(!self.scoreDirt){
 									self.scoreDirt = true;
-									self.killAlienSprite(self.aliensArray[j], j);
-									cc.log("SCORE: ", SCORE);
 									self.updateScore(SCORE);
+									self.killAlienSprite(self.aliensArray[j], j);
 								}
 							}, 300);
 
@@ -393,7 +517,7 @@ var GamePlayLayer = cc.Layer.extend({
 		// USER.HEALTH = USER.HEALTH_UNITS_GIVEN;
 		for (var j = 0; j < this.aliensArray.length; j++) {
 			// USER HEALTH UPDATE
-			if(this.aliensArray[j].y <= 0){
+			if(this.aliensArray[j].y <= 200){
 				damage = this.aliensArray[j].strength;
 				// cc.log("User health update", damage, this.aliensArray[j].y );
 				// cc.log("Sprite pos after intrusion", this.aliensArray[j].y );
@@ -401,7 +525,15 @@ var GamePlayLayer = cc.Layer.extend({
 				this.updateHealthText(USER.HEALTH_UNITS_GIVEN);
 				this.killSprite(this.aliensArray[j]);
 				this.aliensArray.splice(j, 1);
+			} else {
+				if(this.aliensArray[j].points>=ALIEN.LIFE_OBJ){
+					USER.HEALTH_UNITS_GIVEN -= this.aliensArray[j].points;
+					this.updateHealthText(USER.HEALTH_UNITS_GIVEN);
+					this.killSprite(this.aliensArray[j]);
+					this.aliensArray.splice(j, 1);
+				}
 			}
+
 		}
 
 	},
@@ -510,6 +642,13 @@ if(!this.gameover){
 			// strength: 3
 		});
 
+		// var pos = this.focus.getSniperPosition();
+
+		// cc.log(this.focus.sniper.getPosition());
+
+		// var endPoint = getNextPointFromLine(this.focus.sniper.getPosition(), cc.p(launch_position_x, 0), this.size.height, 1); // USING FOCUS and BUTTON TO LAUNCH BULLET
+		var endPoint = getNextPointFromLine(touch.getLocation(), cc.p(launch_position_x, 0), this.size.height, 1); // USING TOUCH TO LAUNCH BULLET
+
 		this.addChild(bullet, 1);
 		// cc.log(bullet, cc.p( this.touch.getLocation().x, this.touch.getLocation().y ));
 		var travelTime = self.touch.getLocation().y / (bullet.time * 1000);
@@ -517,28 +656,32 @@ if(!this.gameover){
 		bullet.runAction(
 			new cc.Sequence(
 				cc.MoveTo.create( 0.05, cc.p( launch_position_x, 60 ) ),
-				cc.MoveTo.create( travelTime, cc.p( self.touch.getLocation().x, self.touch.getLocation().y ) ),
+				// cc.MoveTo.create( travelTime, cc.p( self.touch.getLocation().x, self.touch.getLocation().y ) ),
+				cc.MoveTo.create( travelTime, endPoint),
 				cc.FadeTo.create(0.2, 0)
 			)
 		);
 
 		this.bulletsArray.push(bullet);
 		this.bullet = bullet;
-		this.createShotFocus(touch.getLocation());
+
+
+		// this.createShotFocus(touch.getLocation());
+
 		this.bulletTravel();
 				// this.unscheduleUpdate();
 
-		setTimeout(function(){
-			// self.bulletHide = true;
-			// self.removeChild(bullet); // remove sprite of layer
-			// self.removeChild(self.bullet); // remove sprite of layer
-			cc.log("UNSCHEDULE");
-			self.unscheduleUpdate();
-			// cc.log(self.bullet, bullet);
-         //layer.removeChildByTag(1); // remove sprite by tag
-         //layer.removeAllChildren(); // remove all children
-         //layer.removeFromParent(); // remove from parent
-        }, BULLET.LIFETIME*1000); // after 20 seconds
+		// setTimeout(function(){
+		// 	// self.bulletHide = true;
+		// 	// self.removeChild(bullet); // remove sprite of layer
+		// 	// self.removeChild(self.bullet); // remove sprite of layer
+		// 	cc.log("UNSCHEDULE");
+		// 	self.unscheduleUpdate();
+		// 	// cc.log(self.bullet, bullet);
+  //        //layer.removeChildByTag(1); // remove sprite by tag
+  //        //layer.removeAllChildren(); // remove all children
+  //        //layer.removeFromParent(); // remove from parent
+  //       }, BULLET.LIFETIME*1000); // after 20 seconds
 
 }
 
@@ -588,17 +731,25 @@ if(!this.gameover){
 		var self = this;
 
 		var xPos =  Math.random() * ((size.width-10) - 10) + 10;
-		var power = 1 + Math.round(Math.random() * (ALIEN.MAX_POWER - ALIEN.MIN_POWER) + ALIEN.MIN_POWER);
+		var number = Math.round(Math.random() * (ALIEN.MAX - ALIEN.MIN) + ALIEN.MIN);
+		var power = (number==ALIEN.LIFE_OBJ)?1:(1 + Math.round(Math.random() * (ALIEN.MAX_POWER - ALIEN.MIN_POWER) + ALIEN.MIN_POWER));
+		var rotate = (number==ALIEN.LIFE_OBJ)?90:0;
+		var point = this.getPoints(number);
 
-		this.alien = new cc.Sprite.create(aliens[Math.round(Math.random() * (ALIEN.MAX - ALIEN.MIN) + ALIEN.MIN)]);
+		cc.log("POINTS :: ", point);
+
+		this.alien = new cc.Sprite.create(aliens[number]);
+
 		this.alien.attr({
 			x: xPos,
 			y: size.height,
-			rotation: 0,
+			rotation: 90,
 			scale: power * 0.1,
 			time: ALIEN.TRAVEL - power - (Math.random() * (ALIEN.MAX - ALIEN.MIN) + ALIEN.MIN),
 			strength: power
 		});
+
+		this.alien.points = point;
 
 		if(!this.timeup){
 			this.aliensArray.push(this.alien);
@@ -620,6 +771,21 @@ if(!this.gameover){
 
 	},
 
+	getPoints(n){
+
+		if(n>0&&n<6){
+			return 1;
+		} else if (n==6){
+			return -10;
+		} else if (n>6&&n<10){
+			return -(n-5);
+		} else {
+			cc.log("ALIENs mis leaded");
+			return 0;
+		}
+
+	},
+
 	alienAnimation: function(dt){
 		var self = this;
 		for (var i = 0; i < this.aliensArray.length; i++) {
@@ -638,23 +804,17 @@ if(!this.gameover){
 	createShotFocus: function(position){
 		// Shot Focus Point
 
-		var focus = new cc.Sprite.create(res.sniper_point);
-		focus.attr({
-			x: position.x,
-			y: position.y,
-			scale: 0.5
-		});
 
-		this.addChild(focus);
+		cc.eventManager.addListener(free_touch_listener.clone(), focus);
 
-		focus.runAction(
-			new cc.Sequence(
-				cc.RotateBy.create(0.1, 45),
-				cc.RotateBy.create(0.2, -45),
-				cc.scaleTo(0.4, 0.3),
-				cc.FadeTo.create(0.2, 0)
-			)
-		);
+		// focus.runAction(
+		// 	new cc.Sequence(
+		// 		cc.RotateBy.create(0.1, 45),
+		// 		cc.RotateBy.create(0.2, -45),
+		// 		cc.scaleTo(0.4, 0.3),
+		// 		cc.FadeTo.create(0.2, 0)
+		// 	)
+		// );
 	}
 
 });

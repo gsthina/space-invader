@@ -1,12 +1,15 @@
 //Create a "one by one" touch event listener (processes one touch at a time)
-    var free_touch_listener = cc.EventListener.create({
+    var free_focus_listener = cc.EventListener.create({
 	    event: cc.EventListener.TOUCH_ONE_BY_ONE,
 		// When "swallow touches" is true, then returning 'true' from the onTouchBegan method will "swallow" the touch event, preventing other listeners from using it.
 	    swallowTouches: true,
 		//onTouchBegan event callback function						
 	    onTouchBegan: function (touch, event) {	
+
 			// event.getCurrentTarget() returns the *listener's* sceneGraphPriority node.	
 		    var target = event.getCurrentTarget();	
+
+		    // cc.log(target.getChildren());
 		    
 			//Get the position of the current point relative to the button
 		    var locationInNode = target.convertToNodeSpace(touch.getLocation());	
@@ -33,7 +36,6 @@
 	    onTouchEnded: function (touch, event) {			
 		    var target = event.getCurrentTarget();
 		    cc.log("sprite onTouchesEnded.. ");
-		    target.setOpacity(255);
 			//Reset zOrder and the display sequence will change
 		    // if (target == sprite2) {					
 		    // 	sprite1.setLocalZOrder(100);
