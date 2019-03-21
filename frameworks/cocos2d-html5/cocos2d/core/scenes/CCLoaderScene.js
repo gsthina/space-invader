@@ -49,11 +49,11 @@ cc.LoaderScene = cc.Scene.extend({
         var logoHeight = 200;
 
         // bg
-        var bgLayer = self._bgLayer = new cc.LayerColor(cc.color(32, 32, 32, 255));
+        var bgLayer = self._bgLayer = new SplashScreenLayer();//new cc.LayerColor(cc.color(32, 32, 32, 255));
         self.addChild(bgLayer, 0);
 
         //image move to CCSceneFile.js
-        var fontSize = 24, lblHeight =  -logoHeight / 2 + 100;
+        var fontSize = 32, lblHeight =  -logoHeight / 2 + 100;
         if(cc._loaderImage){
             //loading logo
             cc.loader.loadImg(cc._loaderImage, {isCrossOrigin : false }, function(err, img){
@@ -67,7 +67,8 @@ cc.LoaderScene = cc.Scene.extend({
         //loading percent
         var label = self._label = new cc.LabelTTF("Loading... 0%", "Arial", fontSize);
         label.setPosition(cc.pAdd(cc.visibleRect.center, cc.p(0, lblHeight)));
-        label.setColor(cc.color(180, 180, 180));
+        label.setColor(cc.color(0, 0, 0));
+        // label.setColor(cc.color(180, 180, 180));
         bgLayer.addChild(this._label, 10);
         return true;
     },

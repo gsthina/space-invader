@@ -12,7 +12,7 @@ var aliens 				= [res.alien_obj_1, res.alien_obj_2, res.alien_obj_3, res.alien_o
 var ALIEN = {
 	MIN 		: 0,	// Always 0
 	MAX 		: 9,	// Depends up on the number of aliens available
-	FREQENCY 	: 5,  	// seconds per object
+	FREQENCY 	: 4,  	// seconds per object
 	TRAVEL 		: 20, 	// value - (Math.random() * (ALIEN.MAX - ALIEN.MIN) + ALIEN.MIN)
 	MIN_POWER 	: 1,
 	MAX_POWER 	: 4,
@@ -34,7 +34,7 @@ var BULLET = {
 	LIFETIME	: 1,
 	LAUNCH_POS_X: 0,
 	TRAVEL_TIME : 0.75,
-	LIMIT 		: 10
+	LIMIT 		: 100
 }
 
 var USER = {

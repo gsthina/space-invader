@@ -30,6 +30,7 @@ var MainMenuLayer = cc.Layer.extend({
         // add a label shows "Hello World"
         // create and initialize a label
         var helloLabel = new cc.LabelTTF("Hi, we are the Desi Devs", "Arial", 38);
+        helloLabel.setColor(cc.color(0, 0, 0));
         // position the label on the center of the screen
         helloLabel.x = size.width / 2;
         helloLabel.y = size.height / 2 + 200;
@@ -141,6 +142,59 @@ var BackGroundLayer = cc.Layer.extend({
 	}
 });
 
+var SplashScreenLayer = cc.Layer.extend({
+	sprite 	: null,
+	focus 	: null,
+	ctor	: function(){
+
+		this._super();
+		var size = cc.winSize;
+		this.sprite = new cc.Sprite(res.background_img);
+		this.sprite.attr({
+			x: size.width / 2,
+			y: size.height / 2
+		});
+		this.sprite.size = cc.winSize;
+		this.addChild(this.sprite, 0);
+
+		this.space_overlay = new cc.Sprite(res.space_overlay_img);
+		this.space_overlay.attr({
+			x: size.width / 2,
+			y: size.height / 2,
+			scale: 3,
+			rotation: 180
+		});
+		// this.space_overlay.setOpacity(1);
+		this.space_overlay.size = cc.winSize;
+		this.addChild(this.space_overlay, 1);
+
+		// this.space_overlay.runAction(cc.FadeTo.create(1,1));
+		// this.space_overlay.runAction(cc.rotateBy(2, 180));
+		// this.space_overlay.runAction(cc.scaleTo(2, 1));
+
+
+		// this.bullet.runAction(
+		// 	new cc.Sequence(
+		// 		cc.MoveTo.create( 0.05, cc.p( launch_position_x, 60 ) ),
+		// 		// cc.RotateBy.create(1, 1800),
+		// 		cc.MoveTo.create( this.bullet.time, cc.p( touch.getLocation().x, touch.getLocation().y ) ),
+		// 		// self.addChild(explosion, 0),
+		// 		cc.FadeTo.create(0.2, 0)
+				
+		// 	)
+		// );
+
+
+		// this.space_overlay.runAction(
+		// 	new cc.Sequence(
+		// 		cc.FadeIn.create(0.5, 0.5)
+		// 	)
+		// );
+
+		return true;
+	}
+});
+
 var ControlsLayer = cc.Layer.extend({
 	
 	button: null,
@@ -179,12 +233,11 @@ var GamePlayLayer = cc.Layer.extend({
 	gun: null,
 	earth: null,
 	healthLabel: "",
-	bulletLimit: 0,
 	controls: null,
 	button: null,
 	ctor: function(){
 
-		this.bulletLimit = BULLET.LIMIT;
+		this.bulletCount = BULLET.LIMIT;
 
 		var size = cc.winSize;
 
@@ -220,14 +273,15 @@ var GamePlayLayer = cc.Layer.extend({
 
 		// GUN Sprite
 
-		this.gun = new cc.Sprite.create(res.missile_obj);
+		this.gun = new cc.Sprite.create(res.missile_obj_2);
 		this.gun.attr({
 			x: size.width/2,
-			y: size.height/2,
+			y: 10,
 			rotation: -90,
 			scale: 0.3
 		});
-	    this.addChild(this.gun, 0);
+	    this.addChild(this.gun);
+	    cc.log("GUN : ", this.gun);
 
 	    // GUN Action
 
@@ -296,16 +350,24 @@ var GamePlayLayer = cc.Layer.extend({
 
 	    this.scoreLabel = this.scoreText==0 ? cc.LabelTTF.create("Score: " + "0", "Courier New", "30", cc.TEXT_ALIGNMENT_CENTER) : cc.LabelTTF.create("Score: " + this.scoreText.toString(), "Courier New", "30", cc.TEXT_ALIGNMENT_CENTER);
 		this.scoreLabel.setPosition(this.size.width*0.2, this.size.height*0.9);
+		this.scoreLabel.setColor(cc.color(0, 0, 0));
 		this.addChild(this.scoreLabel, 1);
 
 		this.time = TIMER;
 		this.timeText = cc.LabelTTF.create("Time: " + this.time, "Courier New", "30", cc.TEXT_ALIGNMENT_CENTER);
 		this.timeText.setPosition(this.size.width*0.8, this.size.height*0.9);
+		this.timeText.setColor(cc.color(0, 0, 0));
 		this.addChild(this.timeText, 1);
 
 		this.healthLabel = cc.LabelTTF.create("Health: " + USER.HEALTH_PERCENT, "Courier New", "30", cc.TEXT_ALIGNMENT_CENTER);
 		this.healthLabel.setPosition(this.size.width*0.8, this.size.height*0.1);
+		this.healthLabel.setColor(cc.color(0, 0, 0));
 		this.addChild(this.healthLabel, 1);
+
+		this.bulletCountLabel = cc.LabelTTF.create("Bullets: " + BULLET.LIMIT, "Courier New", "30", cc.TEXT_ALIGNMENT_CENTER);
+		this.bulletCountLabel.setPosition(this.size.width*0.2, this.size.height*0.1);
+		this.bulletCountLabel.setColor(cc.color(0, 0, 0));
+		this.addChild(this.bulletCountLabel, 1);
 
 	},
 
@@ -320,7 +382,9 @@ var GamePlayLayer = cc.Layer.extend({
 	},
 
 	loadBullets: function(limit){
-
+		for (var i = 0; i < limit; i++) {
+			// var ammo[i] = 
+		}
 	},
 
 	time: "00",
@@ -364,10 +428,12 @@ var GamePlayLayer = cc.Layer.extend({
 
 		var label = cc.LabelTTF.create("Thank you!", "Courier New", 50, cc.TEXT_ALIGNMENT_CENTER);
 		label.setPosition(0, 60);
+		label.setColor(cc.color(0, 0, 0));
 		this.sprite.addChild(label, 1); 
 		
 		var play_text = cc.LabelTTF.create("Please share your score and feedbacks! \n \n Reload to Invade the Space!", "Courier New", 20, cc.TEXT_ALIGNMENT_CENTER);
 		play_text.setPosition(0, -10);
+		label.setColor(cc.color(0, 0, 0));
 		this.sprite.addChild(play_text, 1); 
 
 		// this.sprite.runAction(cc.MoveTo.create(2, cc.p( size.width/2, size.height/2 + 50 )));
@@ -420,7 +486,7 @@ var GamePlayLayer = cc.Layer.extend({
 
 		this.alien = this.alien!==null ? this.alien : new cc.Sprite.create(aliens[Math.round(Math.random() * (ALIEN.MAX - ALIEN.MIN) + ALIEN.MIN)]);
 
-		var touchPos = this.bullet.getPosition();
+		var bulletPos = this.bullet.getPosition();
 
 		var tempTouch = cc.p(0,0);
 
@@ -428,70 +494,76 @@ var GamePlayLayer = cc.Layer.extend({
 
 				for (var j = 0; j < this.aliensArray.length; j++) {
 
+					for (var i = 0; i < this.bulletsArray.length; i++){
+					
+						bulletPos = this.bulletsArray[i].getPosition();
 
-					if (cc.rectContainsPoint(this.aliensArray[j].getBoundingBox(), touchPos)) {// || cc.rectContainsPoint(this.aliensArray[j].getBoundingBox(), this.earth.getBoundingBox())){
-						
-						cc.log("Hit!");
-
-						this.bulletHide = true;
-
-						// ALIEN STRENGTH
-
-						if (this.aliensArray[j].strength>0){ 
-
-							// REDUNDANCE STRENGTH CHECK
-
-							if(!this.powerDirt){
-
-								this.powerDirt = true;
-
-								cc.log("ALIEN : ", j , " : POWER : ", this.aliensArray[j].strength);
+						if (cc.rectContainsPoint(this.aliensArray[j].getBoundingBox(), bulletPos)) {// || cc.rectContainsPoint(this.aliensArray[j].getBoundingBox(), this.earth.getBoundingBox())){
 							
-								var sc = this.aliensArray[j].strength - 1;
-								this.aliensArray[j].strength = sc;
-								// this.aliensArray[j].setScale(sc*0.01);
+							cc.log("Hit!");
+
+							this.bulletHide = true;
+
+							// ALIEN STRENGTH
+
+							if (this.aliensArray[j].strength>1){ 
+
+								// REDUNDANCE STRENGTH CHECK
+
+								if(!this.powerDirt){
+
+									this.powerDirt = true;
+
+									cc.log("ALIEN : ", j , " : POWER : ", this.aliensArray[j].strength);
+								
+									var sc = this.aliensArray[j].strength - 1;
+									this.aliensArray[j].strength = sc;
+									// this.aliensArray[j].setScale(sc*0.01);
+									this.aliensArray[j].runAction(
+										new cc.Sequence(
+											cc.scaleTo(0.1, 0.1),
+											cc.scaleTo(0.1, sc/10)
+										)
+									);
+								} else {
+									this.powerDirt = (this.aliensArray[j].strength>0) ? false : true;
+								}
+							
+							} else {
+
+								// IF ALIEN STRENGTH == 0
+								
+								cc.log("Killing ALIEN Sprite - XXXXXXXXXXXXXXXXXXXXXXXX");
+								
 								this.aliensArray[j].runAction(
 									new cc.Sequence(
-										cc.scaleTo(0.1, 0.1),
-										cc.scaleTo(0.1, sc/10)
+										cc.scaleTo(0.05, 0.15),
+										cc.scaleTo(0.2, 0)
 									)
 								);
-							} else {
-								this.powerDirt = (this.aliensArray[j].strength>0) ? true : false;
+
+								this.updateScore(this.aliensArray[j].points);
+
+								// this.aliensArray.splice(j, 1);
+								setTimeout(function() {
+									if(!self.scoreDirt){
+										self.scoreDirt = true;
+										// self.updateScore(self.aliensArray[j].points);
+										self.killAlienSprite(self.aliensArray[j], j);
+									}
+								}, 250);
+
 							}
-						
-						} else {
 
-							// IF ALIEN STRENGTH == 0
+							this.killSprite(this.bullet);
 							
-							this.aliensArray[j].runAction(
-								new cc.Sequence(
-									cc.scaleTo(0.1, 0.2),
-									cc.scaleTo(0.2, 0)
-								)
-							);
+							this.bulletsArray = [];
 
-							// this.aliensArray.splice(j, 1);
-							setTimeout(function() {
-								if(!self.scoreDirt){
-									self.scoreDirt = true;
-									self.updateScore(SCORE);
-									self.killAlienSprite(self.aliensArray[j], j);
-								}
-							}, 300);
-
+						}else if(!this.bulletHide){
+							cc.log("Not Hit!");
 						}
 
-
-
-						this.killSprite(this.bullet);
-						
-						this.bulletsArray = [];
-
-					}else if(!this.bulletHide){
-						cc.log("Not Hit!");
 					}
-
 				}
 
 				// USER HEALTH
@@ -513,28 +585,29 @@ var GamePlayLayer = cc.Layer.extend({
 	},
 
 	updateUserHealth: function(){
-		var damage = 0;
-		// USER.HEALTH = USER.HEALTH_UNITS_GIVEN;
-		for (var j = 0; j < this.aliensArray.length; j++) {
-			// USER HEALTH UPDATE
-			if(this.aliensArray[j].y <= 200){
-				damage = this.aliensArray[j].strength;
-				// cc.log("User health update", damage, this.aliensArray[j].y );
-				// cc.log("Sprite pos after intrusion", this.aliensArray[j].y );
-				USER.HEALTH_UNITS_GIVEN -= damage;
-				this.updateHealthText(USER.HEALTH_UNITS_GIVEN);
-				this.killSprite(this.aliensArray[j]);
-				this.aliensArray.splice(j, 1);
-			} else {
-				if(this.aliensArray[j].points>=ALIEN.LIFE_OBJ){
-					USER.HEALTH_UNITS_GIVEN -= this.aliensArray[j].points;
+		
+			var damage = 0;
+			// USER.HEALTH = USER.HEALTH_UNITS_GIVEN;
+			for (var j = 0; j < this.aliensArray.length; j++) {
+				// USER HEALTH UPDATE
+				if(this.aliensArray[j].y <= -10){
+					damage = this.aliensArray[j].strength;
+					// cc.log("User health update", damage, this.aliensArray[j].y );
+					// cc.log("Sprite pos after intrusion", this.aliensArray[j].y );
+					USER.HEALTH_UNITS_GIVEN -= damage;
 					this.updateHealthText(USER.HEALTH_UNITS_GIVEN);
 					this.killSprite(this.aliensArray[j]);
 					this.aliensArray.splice(j, 1);
+				} else {
+					// if(this.aliensArray[j].points>=ALIEN.LIFE_OBJ){
+					// 	USER.HEALTH_UNITS_GIVEN += this.aliensArray[j].points;
+					// 	this.updateHealthText(USER.HEALTH_UNITS_GIVEN);
+					// 	this.killSprite(this.aliensArray[j]);
+					// 	this.aliensArray.splice(j, 1);
+					// }
 				}
-			}
 
-		}
+			}
 
 	},
 
@@ -592,16 +665,27 @@ var GamePlayLayer = cc.Layer.extend({
 
 	updateScore: function(score){
 
-		this.scoreText += score;
+		if(score<1){
+			this.powerUpUserHealth(score);
+		} else {
+			this.scoreText += score;
 
-		this.scoreLabel.setString("Score: " + this.scoreText);
+			cc.log("Score: " + this.scoreText);
 
-		this.scoreLabel.runAction(
-	    	new cc.Sequence(
-				cc.scaleTo(0.1, 1.05),
-				cc.scaleTo(0.1, 1)
-			)
-		);
+			this.scoreLabel.setString("Score: " + this.scoreText);
+
+			this.scoreLabel.runAction(
+		    	new cc.Sequence(
+					cc.scaleTo(0.1, 1.05),
+					cc.scaleTo(0.1, 1)
+				)
+			);
+		}
+	},
+	
+	powerUpUserHealth: function(power){
+		USER.HEALTH_UNITS_GIVEN += power;
+		this.updateHealthText(USER.HEALTH_UNITS_GIVEN);
 	},
 
 	bullet: null,
@@ -609,11 +693,23 @@ var GamePlayLayer = cc.Layer.extend({
 	renderTex: null,
 	touch: null,
 	event: null,
+	isBulletEmpty: false,
+	bulletCount: 0,
+
+	updateBulletCountText: function(count){
+		this.bulletCountLabel.setString("Bullets: " + count.toString());
+		if(count<=0){
+			this.bulletCountLabel.setString("Bullets: 0");
+			this.endGame();
+		}
+	},
 
 	launchBullet: function(touch, event){
 
 		this.touch = touch;
 		this.event = event;
+		
+		cc.log("Touch: ", touch, "Event: ", event);
 
 		this.powerDirt = false;
 		this.scoreDirt = false;
@@ -624,7 +720,18 @@ var GamePlayLayer = cc.Layer.extend({
 
 		var bullet;
 
-if(!this.gameover){
+if(!this.gameover && !this.isBulletEmpty){
+
+		if(this.bulletCount>1){
+			this.isBulletEmpty = false;
+			this.updateBulletCountText(--this.bulletCount);
+		} else {
+			this.isBulletEmpty = true;
+			this.gameover = true;
+		}
+
+		cc.log("Bullet Count :: ", this.bulletCount);
+		cc.log("Bullet Empty :: ", this.isBulletEmpty);
 
 		if (this.bullet!=null){
 			this.bullet = null;
@@ -634,41 +741,81 @@ if(!this.gameover){
 
 		bullet = new cc.Sprite.create(res.bullet_obj);
 
-		bullet.attr({
-			x 		: launch_position_x,
-	    	y 		: 0,
-			time 	: BULLET.TRAVEL_TIME,
-			scale 	: 0.15
-			// strength: 3
-		});
-
 		// var pos = this.focus.getSniperPosition();
 
 		// cc.log(this.focus.sniper.getPosition());
 
 		// var endPoint = getNextPointFromLine(this.focus.sniper.getPosition(), cc.p(launch_position_x, 0), this.size.height, 1); // USING FOCUS and BUTTON TO LAUNCH BULLET
-		var endPoint = getNextPointFromLine(touch.getLocation(), cc.p(launch_position_x, 0), this.size.height, 1); // USING TOUCH TO LAUNCH BULLET
+		
 
-		this.addChild(bullet, 1);
-		// cc.log(bullet, cc.p( this.touch.getLocation().x, this.touch.getLocation().y ));
-		var travelTime = self.touch.getLocation().y / (bullet.time * 1000);
-		cc.log("Bullet Travel Time :: ",  travelTime);
-		bullet.runAction(
-			new cc.Sequence(
-				cc.MoveTo.create( 0.05, cc.p( launch_position_x, 60 ) ),
-				// cc.MoveTo.create( travelTime, cc.p( self.touch.getLocation().x, self.touch.getLocation().y ) ),
-				cc.MoveTo.create( travelTime, endPoint),
-				cc.FadeTo.create(0.2, 0)
-			)
-		);
+		if(event!=null){
 
-		this.bulletsArray.push(bullet);
-		this.bullet = bullet;
+			bullet.attr({
+				x 		: launch_position_x,
+		    	y 		: 0,
+				time 	: BULLET.TRAVEL_TIME,
+				scale 	: 0.15
+				// strength: 3
+			});
 
 
-		// this.createShotFocus(touch.getLocation());
+			var endPoint = getNextPointFromLine(touch.getLocation(), cc.p(launch_position_x, 0), this.size.height, 1); // USING TOUCH TO LAUNCH BULLET
 
-		this.bulletTravel();
+			this.addChild(bullet, 1);
+			// cc.log(bullet, cc.p( this.touch.getLocation().x, this.touch.getLocation().y ));
+			var travelTime = bullet.time;// self.touch.getLocation().y / (bullet.time * 1000);
+			cc.log("Bullet Travel Time :: ",  travelTime);
+			bullet.runAction(
+				new cc.Sequence(
+					cc.MoveTo.create( 0.05, cc.p( launch_position_x, 60 ) ),
+					// cc.MoveTo.create( travelTime, cc.p( self.touch.getLocation().x, self.touch.getLocation().y ) ),
+					cc.MoveTo.create( travelTime, endPoint),
+					cc.FadeTo.create(0.2, 0)
+				)
+			);
+
+			this.bulletsArray.push(bullet);
+			this.bullet = bullet;
+
+
+			// this.createShotFocus(touch.getLocation());
+
+			// this.bulletTravel();
+			this.scheduleUpdate();
+		} else {  // BULLET FROM ALIEN
+
+			bullet.attr({
+				x 		: touch.x,
+		    	y 		: touch.y-50,
+				time 	: BULLET.TRAVEL_TIME,
+				scale 	: 0.15
+				// strength: 3
+			});
+
+			var endPoint = getNextPointFromLine(touch, cc.p(launch_position_x, 0), 0, 1); // USING ALIEN POSITION TO LAUNCH BULLET
+			cc.log("ENDPOINT :: ", endPoint);
+			this.addChild(bullet, 1);
+			// cc.log(bullet, cc.p( this.touch.getLocation().x, this.touch.getLocation().y ));
+			var travelTime = bullet.time;//self.touch.y / (bullet.time * 1000);
+			cc.log("Bullet Travel Time :: ",  travelTime);
+			bullet.runAction(
+				new cc.Sequence(
+					// cc.MoveTo.create( 0.05, cc.p( launch_position_x, 60 ) ),
+					// cc.MoveTo.create( travelTime, cc.p( self.touch.getLocation().x, self.touch.getLocation().y ) ),
+					cc.MoveTo.create( travelTime, endPoint),
+					cc.FadeTo.create(0.15, 0)
+				)
+			);
+
+			this.bulletsArray.push(bullet);
+			this.bullet = bullet;
+
+
+			// this.createShotFocus(touch.getLocation());
+
+			// this.bulletTravel();
+			this.scheduleUpdate();
+		}
 				// this.unscheduleUpdate();
 
 		// setTimeout(function(){
@@ -723,6 +870,11 @@ if(!this.gameover){
 
     enemyZone: null,
 
+    alienLinearMovement 		: true,
+	alienRandomLinearMovement 	: false,
+	alienZigzagMovement 		: false,
+	alienAttackMovement 		: false,
+
 	launchAlien: function(touch){
 		// cc.log("launchAlien :: ", touch);
 
@@ -736,8 +888,6 @@ if(!this.gameover){
 		var rotate = (number==ALIEN.LIFE_OBJ)?90:0;
 		var point = this.getPoints(number);
 
-		cc.log("POINTS :: ", point);
-
 		this.alien = new cc.Sprite.create(aliens[number]);
 
 		this.alien.attr({
@@ -749,26 +899,84 @@ if(!this.gameover){
 			strength: power
 		});
 
-		this.alien.points = point;
 
-		if(!this.timeup){
-			this.aliensArray.push(this.alien);
-		    this.addChild(this.alien, 0);
-		    this.alien.runAction(
-		    	new cc.Sequence(
-					cc.MoveTo.create( this.alien.time, cc.p( xPos, -10 ) ),
-					cc.FadeTo.create(0.2, 0)
-				)
-			);
+		this.alien.points = (point==1)?power:point;
+
+		cc.log("POINTS :: ", this.alien.points);
+
+		if(this.alienZigzagMovement || this.alienAttackMovement){ // level 3
+			this.alienLinearMovement 	  	= false;
+			this.alienRandomLinearMovement	= false;
+			if(!this.timeup){
+				this.aliensArray.push(this.alien);
+			    this.addChild(this.alien, 0);
+			    this.alien.runAction(
+			    	new cc.Sequence(
+						cc.MoveTo.create( this.alien.time/5, cc.p( this.getRandomPosition(xPos), 8 * this.size.height/10 ) ),
+						cc.MoveTo.create( this.alien.time/5, cc.p( this.getRandomPosition(xPos), 6 * this.size.height/10 ) ),
+						cc.MoveTo.create( this.alien.time/5, cc.p( this.getRandomPosition(xPos), 4 * this.size.height/10 ) ),
+						cc.MoveTo.create( this.alien.time/5, cc.p( this.getRandomPosition(xPos), 2 * this.size.height/10 ) ),
+						cc.MoveTo.create( this.alien.time/5, cc.p( this.getRandomPosition(xPos), -10 ) ),
+						cc.FadeTo.create(0.2, 0)
+					)
+				);
+			}
+
+			if(this.alienAttackMovement){ // level 4
+				this.alienLinearMovement 	  	= false;
+				this.alienRandomLinearMovement	= false;
+				this.alienZigzagMovement 		= false;
+
+
+				// this.launchBullet(this.alien.getPosition(), null);
+			}
+
+		} else if (this.alienRandomLinearMovement) { // level 2
+
+			this.alienLinearMovement 	  	= false;
+			this.alienZigzagMovement 		= false;
+			this.alienAttackMovement 		= false;
+
+			if(!this.timeup){
+				this.aliensArray.push(this.alien);
+			    this.addChild(this.alien, 0);
+			    this.alien.runAction(
+			    	new cc.Sequence(
+						cc.MoveTo.create( this.alien.time, cc.p( this.getRandomPosition(xPos), -10 ) ),
+						cc.FadeTo.create(0.2, 0)
+					)
+				);
+			}
+		} else if (this.alienLinearMovement) { // level 1
+			this.alienRandomLinearMovement	= false;
+			this.alienZigzagMovement 		= false;
+			this.alienAttackMovement 		= false;
+
+			if(!this.timeup){
+				this.aliensArray.push(this.alien);
+			    this.addChild(this.alien, 0);
+			    this.alien.runAction(
+			    	new cc.Sequence(
+						cc.MoveTo.create( this.alien.time, cc.p( xPos, -10 ) ),
+						cc.FadeTo.create(0.2, 0)
+					)
+				);
+			}
+
+		} else {
+			cc.log("Please check Movement config of aliens");
 		}
+	
+	},
 
-		setTimeout(function(){
-	         self.removeChild(this.alien); // remove sprite of layer
-	         //layer.removeChildByTag(1); // remove sprite by tag
-	         //layer.removeAllChildren(); // remove all children
-	         //layer.removeFromParent(); // remove from parent
-	         }, ALIEN.TRAVEL); // after 20 seconds
+	position: true,
 
+	getRandomPosition(x){
+		// this.position = !this.position;
+		if(this.position){
+			cc.log("New Pos: ", Math.round(Math.random() * (this.size.width - this.size.width/10) + this.size.width/10));
+			return Math.round(Math.random() * (this.size.width - this.size.width/10) + this.size.width/10);
+		}
 	},
 
 	getPoints(n){
@@ -778,7 +986,7 @@ if(!this.gameover){
 		} else if (n==6){
 			return -10;
 		} else if (n>6&&n<10){
-			return -(n-5);
+			return -(n-4);
 		} else {
 			cc.log("ALIENs mis leaded");
 			return 0;
@@ -1082,10 +1290,12 @@ var InfoLayer = cc.Layer.extend({
 
 		var label = cc.LabelTTF.create(this.titleText, "Courier New", 50, cc.TEXT_ALIGNMENT_CENTER);
 		label.setPosition(0, 60);
+		label.setColor(cc.color(0, 0, 0));
 		this.sprite.addChild(label, 1); 
 		
 		var play_text = cc.LabelTTF.create(this.subText, "Courier New", 20, cc.TEXT_ALIGNMENT_CENTER);
 		play_text.setPosition(0, -10);
+		play_text.setColor(cc.color(0, 0, 0));
 		this.sprite.addChild(play_text, 1); 
 
 		// this.sprite.runAction(cc.MoveTo.create(2, cc.p( size.width/2, size.height/2 + 50 )));
@@ -1106,8 +1316,8 @@ var InfoLayer = cc.Layer.extend({
 						self.sprite.runAction(
 				    		new cc.Sequence(
 				    			cc.scaleTo(0.1, 0.95),
-								cc.scaleTo(0.1, 1),
-								cc.MoveTo.create(7, cc.p( size.width/2, -size.height/2 ) )
+								cc.scaleTo(0.2, 0)//,
+								// cc.MoveTo.create(7, cc.p( size.width/2, -size.height/2 ) )
 							)
 						);
 		    		}

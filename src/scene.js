@@ -29,8 +29,8 @@ var GamePlayScene = cc.Scene.extend({
         // var focusLayer = new FocusLayer();
         this.addChild(bgLayer);
         this.addChild(layer);
-        this.addChild(infoLayer);
         this.addChild(controlsLayer);
+        this.addChild(infoLayer);
         // this.addChild(focusLayer);
 
     }
