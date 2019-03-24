@@ -34,7 +34,7 @@ var BULLET = {
 	LIFETIME	: 1,
 	LAUNCH_POS_X: 0,
 	TRAVEL_TIME : 0.75,
-	LIMIT 		: 100
+	LIMIT 		: 20
 }
 
 var USER = {

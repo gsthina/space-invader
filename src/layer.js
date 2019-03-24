@@ -15,38 +15,50 @@
 var MainMenuLayer = cc.Layer.extend({
     sprite:null,
     ctor:function () {
-        //////////////////////////////
-        // 1. super init first
+
         this._super();
 
-        /////////////////////////////
-        // 2. add a menu item with "X" image, which is clicked to quit the program
-        //    you may modify it.
-        // ask the window size
         var size = cc.winSize;
 
-        /////////////////////////////
-        // 3. add your codes below...
-        // add a label shows "Hello World"
-        // create and initialize a label
-        var helloLabel = new cc.LabelTTF("Hi, we are the Desi Devs", "Arial", 38);
-        helloLabel.setColor(cc.color(0, 0, 0));
-        // position the label on the center of the screen
-        helloLabel.x = size.width / 2;
-        helloLabel.y = size.height / 2 + 200;
-        // add the label as a child to this layer
-        this.addChild(helloLabel, 5);
+        var menuItem1 = new cc.MenuItemImage(res.play_button_after, res.play_button_after, this.play);
+        var menuItem2 = new cc.MenuItemFont("Feedback", this.feedback);
+        var menuItem3 = new cc.MenuItemFont("Share", this.share);
+        var menuItem4 = new cc.MenuItemFont("Exit", this.exit);
 
-        // add "HelloWorld" splash screen"
-        this.sprite = new cc.Sprite(res.HelloWorld_png);
-        this.sprite.attr({
-            x: size.width / 2,
-            y: size.height / 2
-        });
-        this.addChild(this.sprite, 0);
+        menuItem1.setPosition(cc.p(size.width/2, (size.height/6)*5));
+        menuItem2.setPosition(cc.p(size.width/2, (size.height/6)*4));
+        menuItem3.setPosition(cc.p(size.width/2, (size.height/6)*3));
+        menuItem4.setPosition(cc.p(size.width/2, (size.height/6)*2));
+
+        menuItem1.setScale(0.5);
+
+        var menu = new cc.Menu(menuItem1, menuItem2, menuItem3, menuItem4);
+        menu.setPosition(cc.p(0, 0));
+        this.addChild(menu);
 
         return true;
+    },
+
+    play: function(){
+    	cc.log("MainMenuLayer :: play()");
+    	cc.director.runScene(new GamePlayScene());
+    },
+
+    feedback: function(){
+    	cc.log("MainMenuLayer :: feedback()");
+    	// cc.director.runScene(new MainMenuScene());
+    },
+
+    share: function(){
+    	cc.log("MainMenuLayer :: share()");
+    	// cc.director.runScene(new MainMenuScene());
+    },
+
+    exit: function(){
+    	cc.log("MainMenuLayer :: exit()");
+    	// cc.director.runScene(new MainMenuScene());
     }
+
 });
 
 var FocusLayer = cc.Layer.extend({
@@ -114,6 +126,8 @@ var BackGroundLayer = cc.Layer.extend({
 		// this.space_overlay.setOpacity(1);
 		this.space_overlay.size = cc.winSize;
 		this.addChild(this.space_overlay, 1);
+
+		
 
 		// this.space_overlay.runAction(cc.FadeTo.create(1,1));
 		// this.space_overlay.runAction(cc.rotateBy(2, 180));
@@ -333,6 +347,8 @@ var GamePlayLayer = cc.Layer.extend({
 						self.runTimer(TIMER);
 					}
 	    			// this.unscheduleUpdate();
+	    		}else{
+	    			self.unscheduleUpdate(self.launchAlien);
 	    		}
 	    	},
 
@@ -369,6 +385,37 @@ var GamePlayLayer = cc.Layer.extend({
 		this.bulletCountLabel.setColor(cc.color(0, 0, 0));
 		this.addChild(this.bulletCountLabel, 1);
 
+        var menuItem1 = new cc.MenuItemImage(res.restart_button_after, res.restart_button_after, this.mainmenu);
+        var menuItem2 = new cc.MenuItemImage(res.pause_button_after, res.pause_button_after, this.pause);
+        var menuItem3 = new cc.MenuItemImage(res.restart_button_after, res.restart_button_after, this.restart);
+
+        menuItem1.setPosition(cc.p((size.width/10)*9, (size.height/20)*15));
+        menuItem2.setPosition(cc.p((size.width/10)*9, (size.height/20)*13));
+        menuItem3.setPosition(cc.p((size.width/10)*9, (size.height/20)*11));
+
+        menuItem1.setScale(0.3);
+        menuItem2.setScale(0.3);
+        menuItem3.setScale(0.3);
+
+        var menu = new cc.Menu(menuItem1, menuItem2, menuItem3);
+        menu.setPosition(cc.p(0, 0));
+        this.addChild(menu);
+
+	},
+
+	mainmenu: function(){
+		cc.log("GamePlayLayer :: mainmenu()");
+		//
+	},
+
+	pause: function(){
+		cc.log("GamePlayLayer :: pause()");
+		//
+	},
+
+	restart: function(){
+		cc.log("GamePlayLayer :: restart()");
+		//
 	},
 
 	setFocusAtCenter: function(){
@@ -395,7 +442,7 @@ var GamePlayLayer = cc.Layer.extend({
 		var self = this;
 		this.updateScore(0);
 		var incrementTime = function(){
-			if(parseInt(self.time)<=0){
+			if(parseInt(self.time)<=0 || self.gameover){
 				clearInterval(interval);
 				self.timeText.setString("Time: " + "00");
 				self.endGame();
@@ -415,6 +462,10 @@ var GamePlayLayer = cc.Layer.extend({
 		var interval = setInterval(incrementTime, 1000);
 		
 
+
+	},
+
+	stopTimer: function(){
 
 	},
 
@@ -456,7 +507,6 @@ var GamePlayLayer = cc.Layer.extend({
 
 	clearSpace: function(){
 		var self = this;
-		this.unscheduleAllCallbacks();
 		for (var i = 0; i < this.aliensArray.length; i++) {
 			this.aliensArray[i].runAction(cc.MoveTo.create(1, cc.p(this.size.width/2, this.size.height)));
 			this.aliensArray[i].runAction(
@@ -473,6 +523,8 @@ var GamePlayLayer = cc.Layer.extend({
 		this.bulletsArray = [];
 
 		new InfoLayer().ctor();
+
+		this.gameover = true;
 
 	},
 
@@ -698,7 +750,7 @@ var GamePlayLayer = cc.Layer.extend({
 
 	updateBulletCountText: function(count){
 		this.bulletCountLabel.setString("Bullets: " + count.toString());
-		if(count<=0){
+		if(count<=1){
 			this.bulletCountLabel.setString("Bullets: 0");
 			this.endGame();
 		}
@@ -877,6 +929,10 @@ if(!this.gameover && !this.isBulletEmpty){
 
 	launchAlien: function(touch){
 		// cc.log("launchAlien :: ", touch);
+
+		if(this.gameover){
+			this.unschedule(this.launchAlien);
+		}
 
 		var size = cc.winSize;
 
