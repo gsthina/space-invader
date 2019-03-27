@@ -228,10 +228,17 @@ var BackGroundLayer = cc.Layer.extend({
 		this.sprite = new cc.Sprite(res.background_img);
 		this.sprite.attr({
 			x: size.width / 2,
-			y: size.height / 2
+			y: size.height,
+			scale: 3
 		});
 		this.sprite.size = cc.winSize;
 		this.addChild(this.sprite, 0);
+
+		this.sprite.runAction(
+	    	new cc.Sequence(
+				cc.MoveTo.create(300, cc.p(size.width/2, -size.height/2))
+			)
+		);
 
 		this.space_overlay = new cc.Sprite(res.space_overlay_img);
 		this.space_overlay.attr({
@@ -243,8 +250,6 @@ var BackGroundLayer = cc.Layer.extend({
 		// this.space_overlay.setOpacity(1);
 		this.space_overlay.size = cc.winSize;
 		this.addChild(this.space_overlay, 1);
-
-		
 
 		// this.space_overlay.runAction(cc.FadeTo.create(1,1));
 		// this.space_overlay.runAction(cc.rotateBy(2, 180));
