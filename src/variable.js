@@ -12,9 +12,9 @@ var health 				= [];
 
 var ALIEN = {
 	MIN 		: 0,	// Always 0
-	MAX 		: aliens.length,	// Depends up on the number of aliens available
+	MAX 		: 14,	// Depends up on the number of aliens available
 	FREQENCY 	: 3,  	// seconds per object
-	TRAVEL 		: 20, 	// value - (Math.random() * (ALIEN.MAX - ALIEN.MIN) + ALIEN.MIN)
+	TRAVEL 		: 15, 	// value - (Math.random() * (ALIEN.MAX - ALIEN.MIN) + ALIEN.MIN)
 	MIN_POWER 	: 1,
 	MAX_POWER 	: 4,
 

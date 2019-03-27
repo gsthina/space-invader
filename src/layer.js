@@ -20,12 +20,14 @@ var MainMenuLayer = cc.Layer.extend({
 
         var size = cc.winSize;
 
+        this.showAliens();
+
         var menuItem1 = new cc.MenuItemImage(res.play_button_after, res.play_button_after, this.play);
         var menuItem2 = new cc.MenuItemFont("Feedback ^", this.feedback);
         var menuItem3 = new cc.MenuItemFont("Share", this.share);
         var menuItem4 = new cc.MenuItemImage(res.exit_button_after, res.exit_button_after, this.exit);
 
-        menuItem1.setPosition(cc.p((size.width/10)*5, (size.height/6)*2));
+        menuItem1.setPosition(cc.p((size.width/10)*5, (size.height/6)*1.5));
         menuItem2.setPosition(cc.p((size.width/10)*6, (size.height/6)*2));
         menuItem3.setPosition(cc.p((size.width/10)*5, (size.height/6)*2));
         menuItem4.setPosition(cc.p((size.width/10)*2.5, (size.height/6)*2));
@@ -37,7 +39,57 @@ var MainMenuLayer = cc.Layer.extend({
         menu.setPosition(cc.p(0, 0));
         this.addChild(menu);
 
+
+
         return true;
+    },
+
+    showAliens: function(){
+    	var sp = null;
+    	var size = cc.winSize;
+    	var pos = 0;
+
+    	for (var i = aliens.length - 1; i >= 0; i--) {
+    		sp = new cc.Sprite(aliens[i]);
+
+    		if(i>0&&i<6){
+    			pos = 7;
+			} else if (i==6){
+				pos = 6;
+			} else if (i>6&&i<9){
+				pos = 5;
+			} else if (i>=9){
+				pos = 4;
+			} else {
+				pos = 0;
+			}
+
+    		sp.attr({
+    			x: (size.width/aliens.length) * i,
+    			y: (size.height/10) * pos,
+    			scale: 0.2
+    		});
+    		this.addChild(sp);
+    	}
+
+    	var label0 = cc.LabelTTF.create("Let me Introduce!!", "Courier New", "50");
+    	var label1 = cc.LabelTTF.create("They are Enimies!", "Courier New", "30");
+    	var label2 = cc.LabelTTF.create("It's their Boss!", "Courier New", "30");
+    	var label3 = cc.LabelTTF.create("They are friends!", "Courier New", "30");
+    	var label4 = cc.LabelTTF.create("Boost your game!", "Courier New", "30");
+
+    	label0.setPosition(cc.p((size.width/10)*5, (size.height/10)*(9)));
+    	label1.setPosition(cc.p((size.width/10)*7, (size.height/10)*(7)));
+    	label2.setPosition(cc.p((size.width/10)*7, (size.height/10)*(6)));
+    	label3.setPosition(cc.p((size.width/10)*2.5, (size.height/10)*(5)));
+    	label4.setPosition(cc.p((size.width/10)*3, (size.height/10)*(4)));
+
+    	this.addChild(label0);
+    	this.addChild(label1);
+    	this.addChild(label2);
+    	this.addChild(label3);
+    	this.addChild(label4);
+
     },
 
     play: function(){
@@ -471,9 +523,9 @@ var GamePlayLayer = cc.Layer.extend({
         var menuItem2 = new cc.MenuItemImage(res.back_button_after, res.back_button_after, this.level);
         var menuItem3 = new cc.MenuItemImage(res.restart_button_after, res.restart_button_after, this.restart);
 
-        menuItem1.setPosition(cc.p((size.width/10)*9, (size.height/20)*15));
-        menuItem2.setPosition(cc.p((size.width/10)*9, (size.height/20)*13));
-        menuItem3.setPosition(cc.p((size.width/10)*9, (size.height/20)*11));
+        menuItem1.setPosition(cc.p((size.width/10)*2, (size.height/20)*1));
+        menuItem2.setPosition(cc.p((size.width/10)*8, (size.height/20)*1));
+        menuItem3.setPosition(cc.p((size.width/10)*5, (size.height/20)*1));
 
         menuItem1.setScale(0.3);
         menuItem2.setScale(0.3);
@@ -861,6 +913,7 @@ var GamePlayLayer = cc.Layer.extend({
 		*/
 
 		switch(value){
+			case 110 : this.animateInfoText(CONSTANT.BULLET_BOOST_TEXT); this.bulletCount+=10; this.updateBulletCountText(this.bulletCount); 	break;
 			case 111 : this.animateInfoText(CONSTANT.BULLET_BOOST_TEXT); this.bulletCount+=10; this.updateBulletCountText(this.bulletCount); 	break;
 			case 112 : this.animateInfoText(CONSTANT.ALIEN_FREQ_DEC_TEXT); ALIEN.FREQENCY+=1; break;
 			case 113 : this.animateInfoText(CONSTANT.HEALTH_INCREASED_HALF_TEXT); this.powerUpUserHealth((USER.HEALTH_PERCENT-USER.HEALTH_UNITS_GIVEN)/2);break;
@@ -894,6 +947,7 @@ var GamePlayLayer = cc.Layer.extend({
 	powerUpUserHealth: function(power){
 		var self = this;
 		if(power<0){
+			this.animateInfoText("Avoid hitting it..");
 			this.alertLayerColor.setOpacity(100 + 250*(100-USER.HEALTH_UNITS_GIVEN)/200);
 			setTimeout(function(){
 				self.alertLayerColor.setOpacity(250*(100-USER.HEALTH_UNITS_GIVEN)/200);
@@ -1123,7 +1177,7 @@ if(!this.gameover && !this.isBulletEmpty){
 			this.alien.attr({
 				x: xPos,
 				y: size.height,
-				scale: power*0.1,
+				scale: 5*0.1,
 				time: ALIEN.TRAVEL - power - (Math.random() * (ALIEN.MAX%3 - ALIEN.MIN) + ALIEN.MIN),
 				strength: 2
 			});
@@ -1231,9 +1285,9 @@ if(!this.gameover && !this.isBulletEmpty){
 			return 1;
 		} else if (n==6){
 			return -10;
-		} else if (n>6&&n<10){
+		} else if (n>6&&n<9){
 			return -(n-4);
-		} else if (n>=10){
+		} else if (n>=9){
 			return CONSTANT.PORTION+n;
 		} else {
 			cc.log("ALIENs mis leaded");
