@@ -19,6 +19,7 @@
         "src/scene.js",
         "src/variable.js",
         "src/equations.js",
-        "src/listeners.js"
+        "src/listeners.js",
+        "src/SonarFrameworks.js"
     ]
 }

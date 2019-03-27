@@ -19,6 +19,18 @@ var MainMenuScene = cc.Scene.extend({
     }
 });
 
+var LevelViewScene = cc.Scene.extend({
+    onEnter:function () {
+        this._super();
+        var layer   = new LevelViewLayer();
+        var bgLayer = new BackGroundLayer();    
+        // var testLayer = new MyLayer();   
+        this.addChild(bgLayer);
+        // this.addChild(testLayer);
+        this.addChild(layer);
+    }
+});
+
 var GamePlayScene = cc.Scene.extend({
     onEnter:function () {
         this._super();

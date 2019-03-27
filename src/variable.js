@@ -6,13 +6,14 @@
 var main_menu 			= [res.play_button, res.settings_button, res.credits_button, res.exit_button];
 var sniper_points 		= [res.sniper_point];
 var launch_position_x 	= 0;
-var aliens 				= [res.alien_obj_1, res.alien_obj_2, res.alien_obj_3, res.alien_obj_4, res.alien_obj_5, res.alien_obj_6, res.alien_obj_7, res.alien_obj_8, res.alien_obj_9];
+var aliens 				= [res.alien_obj_1, res.alien_obj_2, res.alien_obj_3, res.alien_obj_4, res.alien_obj_5, res.alien_obj_6, res.alien_obj_7, res.alien_obj_8, res.alien_obj_9, res.alien_obj_10, res.alien_obj_11, res.alien_obj_12, res.alien_obj_13, res.alien_obj_14];
+var health 				= [];
 
 
 var ALIEN = {
 	MIN 		: 0,	// Always 0
-	MAX 		: 9,	// Depends up on the number of aliens available
-	FREQENCY 	: 4,  	// seconds per object
+	MAX 		: aliens.length,	// Depends up on the number of aliens available
+	FREQENCY 	: 3,  	// seconds per object
 	TRAVEL 		: 20, 	// value - (Math.random() * (ALIEN.MAX - ALIEN.MIN) + ALIEN.MIN)
 	MIN_POWER 	: 1,
 	MAX_POWER 	: 4,
@@ -41,4 +42,20 @@ var USER = {
 	HEALTH_UNITS_GIVEN 	: 100,
 	HEALTH_PERCENT  	: 100,
 	HEALTH 				: 0
+};
+
+var GAME = {
+	LEVEL 		: '1'
+};
+
+var CONSTANT = {
+	PORTION 	: 100,
+	BULLET_BOOST_TEXT : "Added 10 Bullets",
+	ALIEN_FREQ_DEC_TEXT : "Game Slowed down",
+	HEALTH_INCREASED_HALF_TEXT : "Increased Health by Half",
+	ALIEN_FREW_INC_TEXT : "Game Speed up"
+};
+
+var POWER = {
+
 }

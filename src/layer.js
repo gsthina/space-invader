@@ -21,18 +21,19 @@ var MainMenuLayer = cc.Layer.extend({
         var size = cc.winSize;
 
         var menuItem1 = new cc.MenuItemImage(res.play_button_after, res.play_button_after, this.play);
-        var menuItem2 = new cc.MenuItemFont("Feedback", this.feedback);
+        var menuItem2 = new cc.MenuItemFont("Feedback ^", this.feedback);
         var menuItem3 = new cc.MenuItemFont("Share", this.share);
-        var menuItem4 = new cc.MenuItemFont("Exit", this.exit);
+        var menuItem4 = new cc.MenuItemImage(res.exit_button_after, res.exit_button_after, this.exit);
 
-        menuItem1.setPosition(cc.p(size.width/2, (size.height/6)*5));
-        menuItem2.setPosition(cc.p(size.width/2, (size.height/6)*4));
-        menuItem3.setPosition(cc.p(size.width/2, (size.height/6)*3));
-        menuItem4.setPosition(cc.p(size.width/2, (size.height/6)*2));
+        menuItem1.setPosition(cc.p((size.width/10)*5, (size.height/6)*2));
+        menuItem2.setPosition(cc.p((size.width/10)*6, (size.height/6)*2));
+        menuItem3.setPosition(cc.p((size.width/10)*5, (size.height/6)*2));
+        menuItem4.setPosition(cc.p((size.width/10)*2.5, (size.height/6)*2));
 
         menuItem1.setScale(0.5);
+        menuItem4.setScale(0.5);
 
-        var menu = new cc.Menu(menuItem1, menuItem2, menuItem3, menuItem4);
+        var menu = new cc.Menu(menuItem1);
         menu.setPosition(cc.p(0, 0));
         this.addChild(menu);
 
@@ -41,16 +42,19 @@ var MainMenuLayer = cc.Layer.extend({
 
     play: function(){
     	cc.log("MainMenuLayer :: play()");
-    	cc.director.runScene(new GamePlayScene());
+    	cc.director.runScene(new LevelViewScene());
     },
 
     feedback: function(){
     	cc.log("MainMenuLayer :: feedback()");
+    	cc.sys.openURL("https://docs.google.com/forms/d/e/1FAIpQLSe1J_r1A37mNFrKMeCSEFd9Y4lKogIHV12NPMSeBxNy3EFukQ/viewform");
     	// cc.director.runScene(new MainMenuScene());
     },
 
     share: function(){
     	cc.log("MainMenuLayer :: share()");
+
+    	cc.sys.openURL('twitter://post?message=THIS IS A TEST MESSAGE');
     	// cc.director.runScene(new MainMenuScene());
     },
 
@@ -59,6 +63,67 @@ var MainMenuLayer = cc.Layer.extend({
     	// cc.director.runScene(new MainMenuScene());
     }
 
+});
+
+var LevelViewLayer = cc.Layer.extend({
+	ctor: function(){
+		this._super();
+		cc.log("LevelViewLayer :: ctor()");
+
+		this.createMenus();
+
+        return true;
+
+	},
+
+	createMenus: function(){
+		var size = cc.winSize;
+
+        var level1Label = new cc.MenuItemFont("Easy", this.gotoLevel);
+        var level2Label = new cc.MenuItemFont("Meduim", this.gotoLevel);
+        var level3Label = new cc.MenuItemFont("Hard", this.gotoLevel);
+        var level4Label = new cc.MenuItemFont("Hardest", this.gotoLevel);
+
+        level1Label.setPosition(cc.p(size.width/2, (size.height/6)*5));
+        level2Label.setPosition(cc.p(size.width/2, (size.height/6)*4));
+        level3Label.setPosition(cc.p(size.width/2, (size.height/6)*3));
+        level4Label.setPosition(cc.p(size.width/2, (size.height/6)*2));
+
+        var menu = new cc.Menu(level1Label, level2Label, level3Label, level4Label);
+        menu.setPosition(cc.p(0, 0));
+        this.addChild(menu);
+	},
+
+	gotoLevel: function(level){
+		level = level.string;
+		var levelMeta = null;
+		switch(level){
+			case 'Easy': {
+				cc.log("LevelViewLayer :: gotoLevel() :: ", level);
+				GAME.LEVEL = '1';
+				break;
+			};
+			case 'Meduim': {
+				cc.log("LevelViewLayer :: gotoLevel() :: ", level);
+				GAME.LEVEL = '2';
+				break;
+			};
+			case 'Hard': {
+				cc.log("LevelViewLayer :: gotoLevel() :: ", level);
+				GAME.LEVEL = '3';
+				break;
+			};
+			case 'Hardest': {
+				cc.log("LevelViewLayer :: gotoLevel() :: ", level);
+				GAME.LEVEL = '4';
+				break;
+			};
+		}
+
+		var game = new GamePlayScene(levelMeta);
+		cc.director.runScene(game);
+
+	}
 });
 
 var FocusLayer = cc.Layer.extend({
@@ -249,13 +314,18 @@ var GamePlayLayer = cc.Layer.extend({
 	healthLabel: "",
 	controls: null,
 	button: null,
+
 	ctor: function(){
+
+		this._super();
 
 		this.bulletCount = BULLET.LIMIT;
 
+		this.getLevelInfo();
+
 		var size = cc.winSize;
 
-		this._super();
+		this.animateInfoText("GAME STARTED");
 
 		// Reference Variable 
 
@@ -295,7 +365,9 @@ var GamePlayLayer = cc.Layer.extend({
 			scale: 0.3
 		});
 	    this.addChild(this.gun);
-	    cc.log("GUN : ", this.gun);
+
+
+	    // cc.log("GUN : ", this.gun);
 
 	    // GUN Action
 
@@ -325,9 +397,19 @@ var GamePlayLayer = cc.Layer.extend({
 
 		// this.setFocusAtCenter();
 
-		
+		this.alertLayerColor = cc.LayerColor.create(new cc.Color(255,0,0,0), 640, 960);
+
+		// this.alertSprite.attr({
+		// 	x 		: size.width/2,
+		// 	y 		: size.height/2
+		// });
+
+		this.addChild(this.alertLayerColor);
+
+
 
 	    // Shoot Listener for Button
+
 
 	    var shoot_listener = cc.EventListener.create({
 
@@ -385,8 +467,8 @@ var GamePlayLayer = cc.Layer.extend({
 		this.bulletCountLabel.setColor(cc.color(0, 0, 0));
 		this.addChild(this.bulletCountLabel, 1);
 
-        var menuItem1 = new cc.MenuItemImage(res.restart_button_after, res.restart_button_after, this.mainmenu);
-        var menuItem2 = new cc.MenuItemImage(res.pause_button_after, res.pause_button_after, this.pause);
+        var menuItem1 = new cc.MenuItemImage(res.mainmenu_button_after, res.mainmenu_button_after, this.mainmenu);
+        var menuItem2 = new cc.MenuItemImage(res.back_button_after, res.back_button_after, this.level);
         var menuItem3 = new cc.MenuItemImage(res.restart_button_after, res.restart_button_after, this.restart);
 
         menuItem1.setPosition(cc.p((size.width/10)*9, (size.height/20)*15));
@@ -403,18 +485,32 @@ var GamePlayLayer = cc.Layer.extend({
 
 	},
 
+	getLevelInfo: function(){
+		cc.log("GamePlayLayer :: getLevelInfo()");
+		switch(GAME.LEVEL){
+			case '1': this.alienLinearMovement 			= true; break;
+			case '2': this.alienRandomLinearMovement 	= true; break;
+			case '3': this.alienZigzagMovement 			= true; break;
+			case '4': this.alienAttackMovement 			= true; break;
+			default : cc.log("GAME.LEVEL : ", GAME.LEVEL); break;
+		};
+	},
+
 	mainmenu: function(){
 		cc.log("GamePlayLayer :: mainmenu()");
+		cc.director.runScene(new MainMenuScene());
 		//
 	},
 
-	pause: function(){
-		cc.log("GamePlayLayer :: pause()");
+	level: function(){
+		cc.log("GamePlayLayer :: level()");
+		cc.director.runScene(new LevelViewScene());
 		//
 	},
 
 	restart: function(){
 		cc.log("GamePlayLayer :: restart()");
+		cc.director.runScene(new GamePlayScene());
 		//
 	},
 
@@ -522,7 +618,7 @@ var GamePlayLayer = cc.Layer.extend({
 		this.aliensArray = [];
 		this.bulletsArray = [];
 
-		new InfoLayer().ctor();
+		// new InfoLayer().ctor();
 
 		this.gameover = true;
 
@@ -595,6 +691,8 @@ var GamePlayLayer = cc.Layer.extend({
 								);
 
 								this.updateScore(this.aliensArray[j].points);
+								this.aliensArray[j].setScale(0);
+								this.removeChild(this.aliensArray[j]);
 
 								// this.aliensArray.splice(j, 1);
 								setTimeout(function() {
@@ -602,6 +700,7 @@ var GamePlayLayer = cc.Layer.extend({
 										self.scoreDirt = true;
 										// self.updateScore(self.aliensArray[j].points);
 										self.killAlienSprite(self.aliensArray[j], j);
+
 									}
 								}, 250);
 
@@ -636,20 +735,34 @@ var GamePlayLayer = cc.Layer.extend({
 
 	},
 
+	alertSprite: null,
+
 	updateUserHealth: function(){
 		
 			var damage = 0;
 			// USER.HEALTH = USER.HEALTH_UNITS_GIVEN;
 			for (var j = 0; j < this.aliensArray.length; j++) {
 				// USER HEALTH UPDATE
-				if(this.aliensArray[j].y <= -10){
+				if(this.aliensArray[j].y <= 0){
 					damage = this.aliensArray[j].strength;
+					var self = this;
+					// setTimeout(function(){
+					// 	self.alertLayerColor.setOpacity(100);
+					// }, 200);
+
 					// cc.log("User health update", damage, this.aliensArray[j].y );
 					// cc.log("Sprite pos after intrusion", this.aliensArray[j].y );
 					USER.HEALTH_UNITS_GIVEN -= damage;
 					this.updateHealthText(USER.HEALTH_UNITS_GIVEN);
+					this.aliensArray[j].setScale(0);
+					this.removeChild(this.aliensArray[j]);
 					this.killSprite(this.aliensArray[j]);
 					this.aliensArray.splice(j, 1);
+					this.alertLayerColor.setOpacity(100 + 250*(100-USER.HEALTH_UNITS_GIVEN)/200);
+					setTimeout(function(){
+						self.alertLayerColor.setOpacity(250*(100-USER.HEALTH_UNITS_GIVEN)/200);
+					}, 100);
+
 				} else {
 					// if(this.aliensArray[j].points>=ALIEN.LIFE_OBJ){
 					// 	USER.HEALTH_UNITS_GIVEN += this.aliensArray[j].points;
@@ -689,7 +802,6 @@ var GamePlayLayer = cc.Layer.extend({
 
 	killAlienSprite: function(sprite, index){
 		this.aliensArray.splice(index, 1);
-		this.removeChild(sprite);
 	},
 
 	drainSprite: function(sprite, quad){
@@ -719,6 +831,8 @@ var GamePlayLayer = cc.Layer.extend({
 
 		if(score<1){
 			this.powerUpUserHealth(score);
+		} else if(score>CONSTANT.PORTION){
+			this.powerBooster(score+1);
 		} else {
 			this.scoreText += score;
 
@@ -734,9 +848,61 @@ var GamePlayLayer = cc.Layer.extend({
 			);
 		}
 	},
+
+	powerBooster: function(value){
+		cc.log("Power Boost : ", value);
+		/*
+			There are four Boosters are available currenty.
+
+			value = 1 : Bullet Fill
+			value = 2 : Speed Decrease
+			value = 3 : Health Fill
+			value = 4 : Speed Increase
+		*/
+
+		switch(value){
+			case 111 : this.animateInfoText(CONSTANT.BULLET_BOOST_TEXT); this.bulletCount+=10; this.updateBulletCountText(this.bulletCount); 	break;
+			case 112 : this.animateInfoText(CONSTANT.ALIEN_FREQ_DEC_TEXT); ALIEN.FREQENCY+=1; break;
+			case 113 : this.animateInfoText(CONSTANT.HEALTH_INCREASED_HALF_TEXT); this.powerUpUserHealth((USER.HEALTH_PERCENT-USER.HEALTH_UNITS_GIVEN)/2);break;
+			case 114 : this.animateInfoText(CONSTANT.ALIEN_FREW_INC_TEXT); ALIEN.FREQENCY-=1; break;
+			default: cc.log("Error: GamePlayLayer : powerBooster() : value : ", value);
+		}
+
+	},
+
+	animateInfoText: function(msg){
+
+		cc.log("INFO TEXT :: ", msg);
+
+		var size = cc.winSize;
+		var infoText = cc.LabelTTF.create(msg, "Courier New", 50, cc.TEXT_ALIGNMENT_CENTER);
+		infoText.setPosition(size.width / 2, size.height/2 + 50);
+		infoText.setScale(0);
+		this.addChild(infoText, 0);
+
+		infoText.runAction(
+	    	new cc.Sequence(
+	    		cc.FadeIn.create(0.2, 1),
+				cc.scaleTo(0.2, 1.05),
+				cc.scaleTo(0.2, 1),
+				cc.FadeTo.create(0.3, 0)
+			)
+		);
+
+	},
 	
 	powerUpUserHealth: function(power){
+		var self = this;
+		if(power<0){
+			this.alertLayerColor.setOpacity(100 + 250*(100-USER.HEALTH_UNITS_GIVEN)/200);
+			setTimeout(function(){
+				self.alertLayerColor.setOpacity(250*(100-USER.HEALTH_UNITS_GIVEN)/200);
+			}, 100);
+		}
 		USER.HEALTH_UNITS_GIVEN += power;
+		if(USER.HEALTH_UNITS_GIVEN>100){
+			USER.HEALTH_UNITS_GIVEN = 100;
+		}
 		this.updateHealthText(USER.HEALTH_UNITS_GIVEN);
 	},
 
@@ -761,7 +927,7 @@ var GamePlayLayer = cc.Layer.extend({
 		this.touch = touch;
 		this.event = event;
 		
-		cc.log("Touch: ", touch, "Event: ", event);
+		// cc.log("Touch: ", touch, "Event: ", event);
 
 		this.powerDirt = false;
 		this.scoreDirt = false;
@@ -782,8 +948,8 @@ if(!this.gameover && !this.isBulletEmpty){
 			this.gameover = true;
 		}
 
-		cc.log("Bullet Count :: ", this.bulletCount);
-		cc.log("Bullet Empty :: ", this.isBulletEmpty);
+		// cc.log("Bullet Count :: ", this.bulletCount);
+		// cc.log("Bullet Empty :: ", this.isBulletEmpty);
 
 		if (this.bullet!=null){
 			this.bullet = null;
@@ -816,7 +982,7 @@ if(!this.gameover && !this.isBulletEmpty){
 			this.addChild(bullet, 1);
 			// cc.log(bullet, cc.p( this.touch.getLocation().x, this.touch.getLocation().y ));
 			var travelTime = bullet.time;// self.touch.getLocation().y / (bullet.time * 1000);
-			cc.log("Bullet Travel Time :: ",  travelTime);
+			// cc.log("Bullet Travel Time :: ",  travelTime);
 			bullet.runAction(
 				new cc.Sequence(
 					cc.MoveTo.create( 0.05, cc.p( launch_position_x, 60 ) ),
@@ -849,7 +1015,7 @@ if(!this.gameover && !this.isBulletEmpty){
 			this.addChild(bullet, 1);
 			// cc.log(bullet, cc.p( this.touch.getLocation().x, this.touch.getLocation().y ));
 			var travelTime = bullet.time;//self.touch.y / (bullet.time * 1000);
-			cc.log("Bullet Travel Time :: ",  travelTime);
+			// cc.log("Bullet Travel Time :: ",  travelTime);
 			bullet.runAction(
 				new cc.Sequence(
 					// cc.MoveTo.create( 0.05, cc.p( launch_position_x, 60 ) ),
@@ -922,7 +1088,7 @@ if(!this.gameover && !this.isBulletEmpty){
 
     enemyZone: null,
 
-    alienLinearMovement 		: true,
+    alienLinearMovement 		: false,
 	alienRandomLinearMovement 	: false,
 	alienZigzagMovement 		: false,
 	alienAttackMovement 		: false,
@@ -945,15 +1111,39 @@ if(!this.gameover && !this.isBulletEmpty){
 		var point = this.getPoints(number);
 
 		this.alien = new cc.Sprite.create(aliens[number]);
-
-		this.alien.attr({
-			x: xPos,
-			y: size.height,
-			rotation: 90,
-			scale: power * 0.1,
-			time: ALIEN.TRAVEL - power - (Math.random() * (ALIEN.MAX - ALIEN.MIN) + ALIEN.MIN),
-			strength: power
-		});
+		if(number>6&&number<10){
+			this.alien.attr({
+				x: xPos,
+				y: size.height,
+				scale: power*0.1,
+				time: ALIEN.TRAVEL - power - (Math.random() * (ALIEN.MAX%3 - ALIEN.MIN) + ALIEN.MIN),
+				strength: 1
+			});
+		} else if(number>9){
+			this.alien.attr({
+				x: xPos,
+				y: size.height,
+				scale: power*0.1,
+				time: ALIEN.TRAVEL - power - (Math.random() * (ALIEN.MAX%3 - ALIEN.MIN) + ALIEN.MIN),
+				strength: 2
+			});
+		} else if (number > 100){
+			this.alien.attr({
+				x: xPos,
+				y: size.height,
+				scale: 5 * 0.1,
+				time: ALIEN.TRAVEL - power - (Math.random() * (ALIEN.MAX%5 - ALIEN.MIN) + ALIEN.MIN),
+				strength: 5
+			});
+		} else {
+			this.alien.attr({
+				x: xPos,
+				y: size.height,
+				scale: power * 0.1,
+				time: ALIEN.TRAVEL - power - (Math.random() * (ALIEN.MAX%5 - ALIEN.MIN) + ALIEN.MIN),
+				strength: power
+			});
+		}
 
 
 		this.alien.points = (point==1)?power:point;
@@ -1043,6 +1233,8 @@ if(!this.gameover && !this.isBulletEmpty){
 			return -10;
 		} else if (n>6&&n<10){
 			return -(n-4);
+		} else if (n>=10){
+			return CONSTANT.PORTION+n;
 		} else {
 			cc.log("ALIENs mis leaded");
 			return 0;
