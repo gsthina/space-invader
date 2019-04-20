@@ -11,7 +11,7 @@ var health 				= [];
 
 
 var ALIEN = {
-	MIN 		: 0,	// Always 0
+	MIN 		: 1,	// Always 0
 	MAX 		: 14,	// Depends up on the number of aliens available
 	FREQENCY 	: 3,  	// seconds per object
 	TRAVEL 		: 15, 	// value - (Math.random() * (ALIEN.MAX - ALIEN.MIN) + ALIEN.MIN)
@@ -50,10 +50,11 @@ var GAME = {
 
 var CONSTANT = {
 	PORTION 	: 100,
-	BULLET_BOOST_TEXT : "Added 10 Bullets",
-	ALIEN_FREQ_DEC_TEXT : "Game Slowed down",
-	HEALTH_INCREASED_HALF_TEXT : "Increased Health by Half",
-	ALIEN_FREW_INC_TEXT : "Game Speed up"
+	BULLET_BOOST_TEXT_5 : "+10 Bullets",
+	BULLET_BOOST_TEXT_10: "+5 Bullets",
+	ALIEN_FREQ_DEC_TEXT : "Slow down",
+	HEALTH_INCREASED_HALF_TEXT : "Health++",
+	ALIEN_FREW_INC_TEXT : "Speed up"
 };
 
 var POWER = {

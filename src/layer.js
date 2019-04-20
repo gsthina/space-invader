@@ -20,28 +20,62 @@ var MainMenuLayer = cc.Layer.extend({
 
         var size = cc.winSize;
 
-        this.showAliens();
+        // this.showAliens();
+
+        this.sprite = new cc.Sprite(res.mainmenu_bg);
+		this.sprite.attr({
+			x: size.width / 2,
+			y: size.height / 2//,
+			// scale: 3
+		});
+		this.sprite.size = cc.winSize;
+		this.addChild(this.sprite, 0);
+
+		var size = cc.winSize;
+
+		this.space_overlay = new cc.Sprite(res.space_overlay_img);
+		this.space_overlay.attr({
+			x: size.width / 2,
+			y: size.height / 2,
+			// scale: 3,
+			opacity: 100
+			// rotation: 180
+		});
+		// this.space_overlay.setOpacity(1);
+		this.space_overlay.size = cc.winSize;
+		this.addChild(this.space_overlay, 1);
 
         var menuItem1 = new cc.MenuItemImage(res.play_button_after, res.play_button_after, this.play);
         var menuItem2 = new cc.MenuItemFont("Feedback ^", this.feedback);
-        var menuItem3 = new cc.MenuItemFont("Share", this.share);
+        // var menuItem3 = new cc.MenuItemFont("Share", this.share);
+        var menuItem3 = new cc.MenuItemImage(res.instructions_button, res.instructions_button, this.instructions);
         var menuItem4 = new cc.MenuItemImage(res.exit_button_after, res.exit_button_after, this.exit);
 
-        menuItem1.setPosition(cc.p((size.width/10)*5, (size.height/6)*1.5));
-        menuItem2.setPosition(cc.p((size.width/10)*6, (size.height/6)*2));
-        menuItem3.setPosition(cc.p((size.width/10)*5, (size.height/6)*2));
-        menuItem4.setPosition(cc.p((size.width/10)*2.5, (size.height/6)*2));
+        menuItem1.setPosition(cc.p((size.width/10)*5, (size.height/10)*5.2));
+        menuItem1.setScale(0.7);
+        menuItem1.setOpacity(0);
 
-        menuItem1.setScale(0.5);
-        menuItem4.setScale(0.5);
+        menuItem3.setPosition(cc.p((size.width/10)*5, (size.height/10)*2));
+        menuItem3.setScale(0.52);
+        menuItem3.setOpacity(0);
 
-        var menu = new cc.Menu(menuItem1);
+        // menuItem1.setPosition(cc.p((size.width/10)*5, (size.height/6)*1.5));
+        // menuItem2.setPosition(cc.p((size.width/10)*5, (size.height/6)*2.5));
+        // menuItem3.setPosition(cc.p((size.width/10)*5, (size.height/6)*3.5));
+        // menuItem4.setPosition(cc.p((size.width/10)*5, (size.height/6)*4.5));
+
+        // menuItem1.setScale(0.5);
+        // menuItem4.setScale(0.5);
+
+        var menu = new cc.Menu(menuItem1, menuItem3);//, menuItem2, menuItem3, menuItem4);
         menu.setPosition(cc.p(0, 0));
         this.addChild(menu);
-
-
-
         return true;
+    },
+
+    instructions(){
+    	cc.log("Instructions Clicked");
+    	
     },
 
     showAliens: function(){
@@ -72,11 +106,11 @@ var MainMenuLayer = cc.Layer.extend({
     		this.addChild(sp);
     	}
 
-    	var label0 = cc.LabelTTF.create("Let me Introduce!!", "Courier New", "50");
-    	var label1 = cc.LabelTTF.create("They are Enimies!", "Courier New", "30");
-    	var label2 = cc.LabelTTF.create("It's their Boss!", "Courier New", "30");
-    	var label3 = cc.LabelTTF.create("They are friends!", "Courier New", "30");
-    	var label4 = cc.LabelTTF.create("Boost your game!", "Courier New", "30");
+    	var label0 = cc.LabelTTF.create("Let me Introduce!!", this.master_font, "50");
+    	var label1 = cc.LabelTTF.create("They are Enimies!", this.master_font, "30");
+    	var label2 = cc.LabelTTF.create("It's their Boss!", this.master_font, "30");
+    	var label3 = cc.LabelTTF.create("They are friends!", this.master_font, "30");
+    	var label4 = cc.LabelTTF.create("Boost your game!", this.master_font, "30");
 
     	label0.setPosition(cc.p((size.width/10)*5, (size.height/10)*(9)));
     	label1.setPosition(cc.p((size.width/10)*7, (size.height/10)*(7)));
@@ -93,25 +127,25 @@ var MainMenuLayer = cc.Layer.extend({
     },
 
     play: function(){
-    	cc.log("MainMenuLayer :: play()");
+    	// cc.log("MainMenuLayer :: play()");
     	cc.director.runScene(new LevelViewScene());
     },
 
     feedback: function(){
-    	cc.log("MainMenuLayer :: feedback()");
+    	// cc.log("MainMenuLayer :: feedback()");
     	cc.sys.openURL("https://docs.google.com/forms/d/e/1FAIpQLSe1J_r1A37mNFrKMeCSEFd9Y4lKogIHV12NPMSeBxNy3EFukQ/viewform");
     	// cc.director.runScene(new MainMenuScene());
     },
 
     share: function(){
-    	cc.log("MainMenuLayer :: share()");
+    	// cc.log("MainMenuLayer :: share()");
 
     	cc.sys.openURL('twitter://post?message=THIS IS A TEST MESSAGE');
     	// cc.director.runScene(new MainMenuScene());
     },
 
     exit: function(){
-    	cc.log("MainMenuLayer :: exit()");
+    	// cc.log("MainMenuLayer :: exit()");
     	// cc.director.runScene(new MainMenuScene());
     }
 
@@ -120,7 +154,22 @@ var MainMenuLayer = cc.Layer.extend({
 var LevelViewLayer = cc.Layer.extend({
 	ctor: function(){
 		this._super();
-		cc.log("LevelViewLayer :: ctor()");
+
+		// cc.log("LevelViewLayer :: ctor()");
+
+		var size = cc.winSize;
+
+		this.space_overlay = new cc.Sprite(res.space_overlay_img);
+		this.space_overlay.attr({
+			x: size.width / 2,
+			y: size.height / 2,
+			// scale: 3,
+			opacity: 130,
+			rotation: 180
+		});
+		// this.space_overlay.setOpacity(1);
+		this.space_overlay.size = cc.winSize;
+		this.addChild(this.space_overlay, 1);
 
 		this.createMenus();
 
@@ -129,19 +178,20 @@ var LevelViewLayer = cc.Layer.extend({
 	},
 
 	createMenus: function(){
+		
 		var size = cc.winSize;
 
-        var level1Label = new cc.MenuItemFont("Easy", this.gotoLevel);
-        var level2Label = new cc.MenuItemFont("Meduim", this.gotoLevel);
-        var level3Label = new cc.MenuItemFont("Hard", this.gotoLevel);
+        var level1Label = new cc.MenuItemFont("EFFORTLESS", this.gotoLevel);
+        var level2Label = new cc.MenuItemFont("MODERATE", this.gotoLevel);
+        var level3Label = new cc.MenuItemFont("IMPENETRABLE", this.gotoLevel);
         var level4Label = new cc.MenuItemFont("Hardest", this.gotoLevel);
 
-        level1Label.setPosition(cc.p(size.width/2, (size.height/6)*5));
-        level2Label.setPosition(cc.p(size.width/2, (size.height/6)*4));
-        level3Label.setPosition(cc.p(size.width/2, (size.height/6)*3));
-        level4Label.setPosition(cc.p(size.width/2, (size.height/6)*2));
+        level1Label.setPosition(cc.p(size.width/2, (size.height/6)*4));
+        level2Label.setPosition(cc.p(size.width/2, (size.height/6)*3));
+        level3Label.setPosition(cc.p(size.width/2, (size.height/6)*2));
+        level4Label.setPosition(cc.p(size.width/2, (size.height/6)*1));
 
-        var menu = new cc.Menu(level1Label, level2Label, level3Label, level4Label);
+        var menu = new cc.Menu(level1Label, level2Label, level3Label);
         menu.setPosition(cc.p(0, 0));
         this.addChild(menu);
 	},
@@ -151,22 +201,22 @@ var LevelViewLayer = cc.Layer.extend({
 		var levelMeta = null;
 		switch(level){
 			case 'Easy': {
-				cc.log("LevelViewLayer :: gotoLevel() :: ", level);
+				// cc.log("LevelViewLayer :: gotoLevel() :: ", level);
 				GAME.LEVEL = '1';
 				break;
 			};
-			case 'Meduim': {
-				cc.log("LevelViewLayer :: gotoLevel() :: ", level);
+			case 'Medium': {
+				// cc.log("LevelViewLayer :: gotoLevel() :: ", level);
 				GAME.LEVEL = '2';
 				break;
 			};
 			case 'Hard': {
-				cc.log("LevelViewLayer :: gotoLevel() :: ", level);
+				// cc.log("LevelViewLayer :: gotoLevel() :: ", level);
 				GAME.LEVEL = '3';
 				break;
 			};
 			case 'Hardest': {
-				cc.log("LevelViewLayer :: gotoLevel() :: ", level);
+				// cc.log("LevelViewLayer :: gotoLevel() :: ", level);
 				GAME.LEVEL = '4';
 				break;
 			};
@@ -188,13 +238,13 @@ var FocusLayer = cc.Layer.extend({
 
 		this._super();
 
-		cc.log("FocusLayer :: ctor");
+		// cc.log("FocusLayer :: ctor");
 
 	},
 
 	create: function(){
 
-		cc.log("FocusLayer :: create");
+		// cc.log("FocusLayer :: create");
 
 		this.sniper = new cc.Sprite.create(res.sniper_point);
 
@@ -213,7 +263,7 @@ var FocusLayer = cc.Layer.extend({
 	},
 
 	getSniperPosition: function(){
-		cc.log(this.sniper);
+		// cc.log(this.sniper);
 		return this.sniper.getPosition();
 	}
 });
@@ -228,28 +278,17 @@ var BackGroundLayer = cc.Layer.extend({
 		this.sprite = new cc.Sprite(res.background_img);
 		this.sprite.attr({
 			x: size.width / 2,
-			y: size.height,
-			scale: 3
+			y: size.height / 2//,
+			// scale: 3
 		});
 		this.sprite.size = cc.winSize;
 		this.addChild(this.sprite, 0);
 
-		this.sprite.runAction(
-	    	new cc.Sequence(
-				cc.MoveTo.create(300, cc.p(size.width/2, -size.height/2))
-			)
-		);
-
-		this.space_overlay = new cc.Sprite(res.space_overlay_img);
-		this.space_overlay.attr({
-			x: size.width / 2,
-			y: size.height / 2,
-			scale: 3,
-			rotation: 180
-		});
-		// this.space_overlay.setOpacity(1);
-		this.space_overlay.size = cc.winSize;
-		this.addChild(this.space_overlay, 1);
+		// this.sprite.runAction(
+	 //    	new cc.Sequence(
+		// 		cc.MoveTo.create(300, cc.p(size.width/2, -size.height/2))
+		// 	)
+		// );
 
 		// this.space_overlay.runAction(cc.FadeTo.create(1,1));
 		// this.space_overlay.runAction(cc.rotateBy(2, 180));
@@ -339,7 +378,7 @@ var ControlsLayer = cc.Layer.extend({
  
 	ctor: function(){
 
-		cc.log("ControlsLayer :: ctor");
+		// cc.log("ControlsLayer :: ctor");
 
 		this._super();
 
@@ -382,8 +421,6 @@ var GamePlayLayer = cc.Layer.extend({
 
 		var size = cc.winSize;
 
-		this.animateInfoText("GAME STARTED");
-
 		// Reference Variable 
 
 		var self = this;
@@ -391,6 +428,10 @@ var GamePlayLayer = cc.Layer.extend({
 		// Launch Position 
 
 	    launch_position_x = size.width/2;
+
+	    this.displayAlertMessage("CLICK TO INVADE");
+
+	    // this.textTypeWriter("textTypeWriter");
 
 	    // EARTH Sprite
 
@@ -414,14 +455,14 @@ var GamePlayLayer = cc.Layer.extend({
 
 		// GUN Sprite
 
-		this.gun = new cc.Sprite.create(res.missile_obj_2);
-		this.gun.attr({
-			x: size.width/2,
-			y: 10,
-			rotation: -90,
-			scale: 0.3
-		});
-	    this.addChild(this.gun);
+		// this.gun = new cc.Sprite.create(res.missile_obj_2);
+		// this.gun.attr({
+		// 	x: size.width/2,
+		// 	y: 10,
+		// 	rotation: -90,
+		// 	scale: 0.3
+		// });
+	 //    this.addChild(this.gun);
 
 
 	    // cc.log("GUN : ", this.gun);
@@ -437,7 +478,7 @@ var GamePlayLayer = cc.Layer.extend({
 
 	    // GUN Listener
 
-	    cc.eventManager.addListener(gun_movement.clone(), this.gun );
+	    // cc.eventManager.addListener(gun_movement.clone(), this.gun );
 
 	    // Load Controls
 
@@ -475,6 +516,7 @@ var GamePlayLayer = cc.Layer.extend({
 
 	    	onTouchBegan: function(touch, event){
 	    		if(!this.gameover){
+
 	    			self.launchBullet(touch, event);
 	    			self.schedule(self.launchAlien, ALIEN.FREQENCY); // Scheduling the aliens fall in every ALIEN.FREQENCY (seconds per object)
 	    			self.schedule(self.updateUserHealth);
@@ -503,38 +545,42 @@ var GamePlayLayer = cc.Layer.extend({
 
 	    cc.eventManager.addListener(shoot_listener.clone(), this);
 
-	    this.scoreLabel = this.scoreText==0 ? cc.LabelTTF.create("Score: " + "0", "Courier New", "30", cc.TEXT_ALIGNMENT_CENTER) : cc.LabelTTF.create("Score: " + this.scoreText.toString(), "Courier New", "30", cc.TEXT_ALIGNMENT_CENTER);
+	    this.scoreLabel = this.scoreText==0 ? cc.LabelTTF.create("Score: " + "0", this.master_font, "30", cc.TEXT_ALIGNMENT_CENTER) : cc.LabelTTF.create("Score: " + this.scoreText.toString(), "Courier New", "30", cc.TEXT_ALIGNMENT_CENTER);
 		this.scoreLabel.setPosition(this.size.width*0.2, this.size.height*0.9);
-		this.scoreLabel.setColor(cc.color(0, 0, 0));
+		this.scoreLabel.setColor(this.master_color);
 		this.addChild(this.scoreLabel, 1);
 
 		this.time = TIMER;
-		this.timeText = cc.LabelTTF.create("Time: " + this.time, "Courier New", "30", cc.TEXT_ALIGNMENT_CENTER);
+		this.timeText = cc.LabelTTF.create("Time: " + this.time, this.master_font, "30", cc.TEXT_ALIGNMENT_CENTER);
 		this.timeText.setPosition(this.size.width*0.8, this.size.height*0.9);
-		this.timeText.setColor(cc.color(0, 0, 0));
+		this.timeText.setColor(this.master_color);
 		this.addChild(this.timeText, 1);
 
-		this.healthLabel = cc.LabelTTF.create("Health: " + USER.HEALTH_PERCENT, "Courier New", "30", cc.TEXT_ALIGNMENT_CENTER);
-		this.healthLabel.setPosition(this.size.width*0.8, this.size.height*0.1);
-		this.healthLabel.setColor(cc.color(0, 0, 0));
+		this.healthLabel = cc.LabelTTF.create("Health: " + USER.HEALTH_PERCENT, this.master_font, "30", cc.TEXT_ALIGNMENT_CENTER);
+		this.healthLabel.setPosition(this.size.width*0.8, this.size.height*0.8);
+		this.healthLabel.setColor(this.master_color);
 		this.addChild(this.healthLabel, 1);
 
-		this.bulletCountLabel = cc.LabelTTF.create("Bullets: " + BULLET.LIMIT, "Courier New", "30", cc.TEXT_ALIGNMENT_CENTER);
-		this.bulletCountLabel.setPosition(this.size.width*0.2, this.size.height*0.1);
-		this.bulletCountLabel.setColor(cc.color(0, 0, 0));
+		this.bulletCountLabel = cc.LabelTTF.create("Bullets: " + BULLET.LIMIT, this.master_font, "30", cc.TEXT_ALIGNMENT_CENTER);
+		this.bulletCountLabel.setPosition(this.size.width*0.2, this.size.height*0.8);
+		this.bulletCountLabel.setColor(this.master_color);
 		this.addChild(this.bulletCountLabel, 1);
 
-        var menuItem1 = new cc.MenuItemImage(res.mainmenu_button_after, res.mainmenu_button_after, this.mainmenu);
-        var menuItem2 = new cc.MenuItemImage(res.back_button_after, res.back_button_after, this.level);
-        var menuItem3 = new cc.MenuItemImage(res.restart_button_after, res.restart_button_after, this.restart);
+        var menuItem1 = new cc.MenuItemImage(res.control_button_0, res.control_button_0, this.mainmenu);
+        var menuItem2 = new cc.MenuItemImage(res.control_button_0, res.control_button_0, this.level);
+        var menuItem3 = new cc.MenuItemImage(res.control_button_0, res.control_button_0, this.restart);
 
-        menuItem1.setPosition(cc.p((size.width/10)*2, (size.height/20)*1));
-        menuItem2.setPosition(cc.p((size.width/10)*8, (size.height/20)*1));
-        menuItem3.setPosition(cc.p((size.width/10)*5, (size.height/20)*1));
+        menuItem1.setPosition(cc.p((size.width/10)*1.6, (size.height/20)*1.5));
+        menuItem2.setPosition(cc.p((size.width/10)*8.25, (size.height/20)*1.5));
+        menuItem3.setPosition(cc.p((size.width/10)*4.93, (size.height/20)*1.5));
 
         menuItem1.setScale(0.3);
         menuItem2.setScale(0.3);
         menuItem3.setScale(0.3);
+
+        menuItem1.setOpacity(0);
+        menuItem2.setOpacity(0);
+        menuItem3.setOpacity(0);
 
         var menu = new cc.Menu(menuItem1, menuItem2, menuItem3);
         menu.setPosition(cc.p(0, 0));
@@ -542,8 +588,19 @@ var GamePlayLayer = cc.Layer.extend({
 
 	},
 
+	master_color: cc.color(255, 255, 255),
+	master_font : "BonvenoCF",
+
+	checkGameMode(){
+		// this.nightMode = cc.LayerColor.create(new cc.Color(0,0,0,150), 640, 960); // Night Mode
+		this.nightMode = cc.LayerColor.create(new cc.Color(255,255,255,150), 640, 960); // Day Mode
+		this.addChild(this.nightMode);
+	},
+
+
+
 	getLevelInfo: function(){
-		cc.log("GamePlayLayer :: getLevelInfo()");
+		// cc.log("GamePlayLayer :: getLevelInfo()");
 		switch(GAME.LEVEL){
 			case '1': this.alienLinearMovement 			= true; break;
 			case '2': this.alienRandomLinearMovement 	= true; break;
@@ -554,19 +611,19 @@ var GamePlayLayer = cc.Layer.extend({
 	},
 
 	mainmenu: function(){
-		cc.log("GamePlayLayer :: mainmenu()");
+		// cc.log("GamePlayLayer :: mainmenu()");
 		cc.director.runScene(new MainMenuScene());
 		//
 	},
 
 	level: function(){
-		cc.log("GamePlayLayer :: level()");
+		// cc.log("GamePlayLayer :: level()");
 		cc.director.runScene(new LevelViewScene());
 		//
 	},
 
 	restart: function(){
-		cc.log("GamePlayLayer :: restart()");
+		// cc.log("GamePlayLayer :: restart()");
 		cc.director.runScene(new GamePlayScene());
 		//
 	},
@@ -630,14 +687,14 @@ var GamePlayLayer = cc.Layer.extend({
 		this.sprite.setScale(0);
 		this.addChild(this.sprite, 0);
 
-		var label = cc.LabelTTF.create("Thank you!", "Courier New", 50, cc.TEXT_ALIGNMENT_CENTER);
+		var label = cc.LabelTTF.create("Thank you!", this.master_font, 50, cc.TEXT_ALIGNMENT_CENTER);
 		label.setPosition(0, 60);
-		label.setColor(cc.color(0, 0, 0));
+		label.setColor(this.master_color);
 		this.sprite.addChild(label, 1); 
 		
 		var play_text = cc.LabelTTF.create("Please share your score and feedbacks! \n \n Reload to Invade the Space!", "Courier New", 20, cc.TEXT_ALIGNMENT_CENTER);
 		play_text.setPosition(0, -10);
-		label.setColor(cc.color(0, 0, 0));
+		label.setColor(this.master_color);
 		this.sprite.addChild(play_text, 1); 
 
 		// this.sprite.runAction(cc.MoveTo.create(2, cc.p( size.width/2, size.height/2 + 50 )));
@@ -648,11 +705,23 @@ var GamePlayLayer = cc.Layer.extend({
 			)
 		);
 
-		this.gun.runAction(
-			new cc.Sequence(
-				cc.MoveTo.create(0.1, cc.p(this.size.width/2, -40))
-			)
-		);
+		this.space_overlay = new cc.Sprite(res.space_overlay_img);
+		this.space_overlay.attr({
+			x: this.size.width / 2,
+			y: this.size.height / 2,
+			// scale: 3,
+			opacity: 100
+			// rotation: 180
+		});
+		// this.space_overlay.setOpacity(1);
+		this.space_overlay.size = cc.winSize;
+		this.addChild(this.space_overlay, 1);
+
+		// this.gun.runAction(
+		// 	new cc.Sequence(
+		// 		cc.MoveTo.create(0.1, cc.p(this.size.width/2, -40))
+		// 	)
+		// );
 		this.timeup = true;
 		this.gameover = true;
 		this.clearSpace();
@@ -705,7 +774,7 @@ var GamePlayLayer = cc.Layer.extend({
 
 						if (cc.rectContainsPoint(this.aliensArray[j].getBoundingBox(), bulletPos)) {// || cc.rectContainsPoint(this.aliensArray[j].getBoundingBox(), this.earth.getBoundingBox())){
 							
-							cc.log("Hit!");
+							// cc.log("Hit!");
 
 							this.bulletHide = true;
 
@@ -719,7 +788,7 @@ var GamePlayLayer = cc.Layer.extend({
 
 									this.powerDirt = true;
 
-									cc.log("ALIEN : ", j , " : POWER : ", this.aliensArray[j].strength);
+									// cc.log("ALIEN : ", j , " : POWER : ", this.aliensArray[j].strength);
 								
 									var sc = this.aliensArray[j].strength - 1;
 									this.aliensArray[j].strength = sc;
@@ -738,7 +807,7 @@ var GamePlayLayer = cc.Layer.extend({
 
 								// IF ALIEN STRENGTH == 0
 								
-								cc.log("Killing ALIEN Sprite - XXXXXXXXXXXXXXXXXXXXXXXX");
+								// cc.log("Killing ALIEN Sprite - XXXXXXXXXXXXXXXXXXXXXXXX");
 								
 								this.aliensArray[j].runAction(
 									new cc.Sequence(
@@ -746,7 +815,7 @@ var GamePlayLayer = cc.Layer.extend({
 										cc.scaleTo(0.2, 0)
 									)
 								);
-
+								cc.log("this.updateScore :: this.aliensArray[", j, "].points)  :: ", this.aliensArray[j].points);
 								this.updateScore(this.aliensArray[j].points);
 								this.aliensArray[j].setScale(0);
 								this.removeChild(this.aliensArray[j]);
@@ -768,7 +837,7 @@ var GamePlayLayer = cc.Layer.extend({
 							this.bulletsArray = [];
 
 						}else if(!this.bulletHide){
-							cc.log("Not Hit!");
+							// cc.log("Not Hit!");
 						}
 
 					}
@@ -800,25 +869,33 @@ var GamePlayLayer = cc.Layer.extend({
 			// USER.HEALTH = USER.HEALTH_UNITS_GIVEN;
 			for (var j = 0; j < this.aliensArray.length; j++) {
 				// USER HEALTH UPDATE
-				if(this.aliensArray[j].y <= 0){
-					damage = this.aliensArray[j].strength;
-					var self = this;
-					// setTimeout(function(){
-					// 	self.alertLayerColor.setOpacity(100);
-					// }, 200);
+				if(this.aliensArray[j].y <= 150 && this.aliensArray[j]!=undefined){
+					// try{
 
-					// cc.log("User health update", damage, this.aliensArray[j].y );
-					// cc.log("Sprite pos after intrusion", this.aliensArray[j].y );
-					USER.HEALTH_UNITS_GIVEN -= damage;
-					this.updateHealthText(USER.HEALTH_UNITS_GIVEN);
-					this.aliensArray[j].setScale(0);
-					this.removeChild(this.aliensArray[j]);
-					this.killSprite(this.aliensArray[j]);
-					this.aliensArray.splice(j, 1);
-					this.alertLayerColor.setOpacity(100 + 250*(100-USER.HEALTH_UNITS_GIVEN)/200);
-					setTimeout(function(){
-						self.alertLayerColor.setOpacity(250*(100-USER.HEALTH_UNITS_GIVEN)/200);
-					}, 100);
+							damage = (this.aliensArray[j].points>100)?110-this.aliensArray[j].points:this.aliensArray[j].points;
+							var self = this;
+							// setTimeout(function(){
+							// 	self.alertLayerColor.setOpacity(100);
+							// }, 200);
+
+							// cc.log("User health update", damage, this.aliensArray[j].y );
+							// cc.log("Sprite pos after intrusion", this.aliensArray[j].y );
+							USER.HEALTH_UNITS_GIVEN -= damage;
+							USER.HEALTH_UNITS_GIVEN = (USER.HEALTH_UNITS_GIVEN>100)?100:USER.HEALTH_UNITS_GIVEN;
+							// cc.log(USER.HEALTH_UNITS_GIVEN, " :: ", damage);
+							this.updateHealthText(USER.HEALTH_UNITS_GIVEN);
+							// cc.log("ATTACKED :: ", this.aliensArray[j]);
+							this.aliensArray[j].setScale(0);
+							this.removeChild(this.aliensArray[j]);
+							this.killSprite(this.aliensArray[j]);
+							this.aliensArray.splice(j, 1);
+							this.alertLayerColor.setOpacity(100 + 250*(100-USER.HEALTH_UNITS_GIVEN)/200);
+							setTimeout(function(){
+								self.alertLayerColor.setOpacity(250*(100-USER.HEALTH_UNITS_GIVEN)/200);
+							}, 100);
+					// } catch (e){
+						// cc.log("ERROR :: ", e);
+					// }
 
 				} else {
 					// if(this.aliensArray[j].points>=ALIEN.LIFE_OBJ){
@@ -885,7 +962,7 @@ var GamePlayLayer = cc.Layer.extend({
 	size: cc.winSize,
 
 	updateScore: function(score){
-
+		// cc.log("score :: ", score);
 		if(score<1){
 			this.powerUpUserHealth(score);
 		} else if(score>CONSTANT.PORTION){
@@ -893,7 +970,7 @@ var GamePlayLayer = cc.Layer.extend({
 		} else {
 			this.scoreText += score;
 
-			cc.log("Score: " + this.scoreText);
+			// cc.log("Score: " + this.scoreText);
 
 			this.scoreLabel.setString("Score: " + this.scoreText);
 
@@ -907,7 +984,7 @@ var GamePlayLayer = cc.Layer.extend({
 	},
 
 	powerBooster: function(value){
-		cc.log("Power Boost : ", value);
+		// cc.log("Power Boost : ", value);
 		/*
 			There are four Boosters are available currenty.
 
@@ -918,8 +995,8 @@ var GamePlayLayer = cc.Layer.extend({
 		*/
 
 		switch(value){
-			case 110 : this.animateInfoText(CONSTANT.BULLET_BOOST_TEXT); this.bulletCount+=10; this.updateBulletCountText(this.bulletCount); 	break;
-			case 111 : this.animateInfoText(CONSTANT.BULLET_BOOST_TEXT); this.bulletCount+=10; this.updateBulletCountText(this.bulletCount); 	break;
+			case 110 : this.animateInfoText(CONSTANT.BULLET_BOOST_TEXT_10); this.bulletCount+=10; this.updateBulletCountText(this.bulletCount); 	break;
+			case 111 : this.animateInfoText(CONSTANT.BULLET_BOOST_TEXT_5); this.bulletCount+=5; this.updateBulletCountText(this.bulletCount); 	break;
 			case 112 : this.animateInfoText(CONSTANT.ALIEN_FREQ_DEC_TEXT); ALIEN.FREQENCY+=1; break;
 			case 113 : this.animateInfoText(CONSTANT.HEALTH_INCREASED_HALF_TEXT); this.powerUpUserHealth((USER.HEALTH_PERCENT-USER.HEALTH_UNITS_GIVEN)/2);break;
 			case 114 : this.animateInfoText(CONSTANT.ALIEN_FREW_INC_TEXT); ALIEN.FREQENCY-=1; break;
@@ -930,10 +1007,10 @@ var GamePlayLayer = cc.Layer.extend({
 
 	animateInfoText: function(msg){
 
-		cc.log("INFO TEXT :: ", msg);
+		// cc.log("INFO TEXT :: ", msg);
 
 		var size = cc.winSize;
-		var infoText = cc.LabelTTF.create(msg, "Courier New", 50, cc.TEXT_ALIGNMENT_CENTER);
+		var infoText = cc.LabelTTF.create(msg, this.master_font, 50, cc.TEXT_ALIGNMENT_CENTER);
 		infoText.setPosition(size.width / 2, size.height/2 + 50);
 		infoText.setScale(0);
 		this.addChild(infoText, 0);
@@ -948,9 +1025,69 @@ var GamePlayLayer = cc.Layer.extend({
 		);
 
 	},
+
+	alertText: null,
+
+	displayAlertMessage: function(msg){
+
+		this.space_overlay = new cc.Sprite(res.space_overlay_img);
+		this.space_overlay.attr({
+			x: this.size.width / 2,
+			y: this.size.height / 2
+			// scale: 3,
+			// rotation: 180
+		});
+		// this.space_overlay.setOpacity(1);
+		this.space_overlay.size = cc.winSize;
+		this.addChild(this.space_overlay, 1);
+		this.space_overlay.setScale(0);
+		this.space_overlay.runAction(
+	    	new cc.Sequence(
+	    		cc.FadeIn.create(0.2, 1),
+				cc.scaleTo(0.2, 1.05),
+				cc.scaleTo(0.4, 1)
+			)
+		);
+
+		var size = cc.winSize;
+		this.alertText = cc.LabelTTF.create(msg, this.master_font, 50, cc.TEXT_ALIGNMENT_CENTER);
+		this.alertText.setPosition(size.width / 2, size.height/2 + 50);
+		this.alertText.setScale(0);
+		this.addChild(this.alertText, 0);
+
+		this.alertText.runAction(
+	    	new cc.Sequence(
+	    		cc.FadeIn.create(0.2, 1),
+				cc.scaleTo(0.2, 1.05),
+				cc.scaleTo(0.4, 1)
+			)
+		);
+	},
+
+	clearAlerts: function(){
+		this.alertText.setString("");
+		this.space_overlay.runAction(
+			new cc.Sequence(
+				cc.FadeTo.create(0.1, 0)
+			)
+		);
+		// this.removeChild(this.space_overlay);
+		this.alertText.runAction(
+	    	new cc.Sequence(
+	    		cc.FadeTo.create(0.1, 0)
+			)
+		);
+	},
 	
 	powerUpUserHealth: function(power){
 		var self = this;
+
+		USER.HEALTH_UNITS_GIVEN += power;
+		if(USER.HEALTH_UNITS_GIVEN>100){
+			USER.HEALTH_UNITS_GIVEN = 100;
+		}
+		this.updateHealthText(USER.HEALTH_UNITS_GIVEN);
+
 		if(power<0){
 			this.animateInfoText("Avoid hitting it..");
 			this.alertLayerColor.setOpacity(100 + 250*(100-USER.HEALTH_UNITS_GIVEN)/200);
@@ -958,11 +1095,6 @@ var GamePlayLayer = cc.Layer.extend({
 				self.alertLayerColor.setOpacity(250*(100-USER.HEALTH_UNITS_GIVEN)/200);
 			}, 100);
 		}
-		USER.HEALTH_UNITS_GIVEN += power;
-		if(USER.HEALTH_UNITS_GIVEN>100){
-			USER.HEALTH_UNITS_GIVEN = 100;
-		}
-		this.updateHealthText(USER.HEALTH_UNITS_GIVEN);
 	},
 
 	bullet: null,
@@ -980,6 +1112,8 @@ var GamePlayLayer = cc.Layer.extend({
 			this.endGame();
 		}
 	},
+
+	touchDirty : false,
 
 	launchBullet: function(touch, event){
 
@@ -999,9 +1133,11 @@ var GamePlayLayer = cc.Layer.extend({
 
 if(!this.gameover && !this.isBulletEmpty){
 
-		if(this.bulletCount>1){
+	(this.alertText.getString()!="")?this.clearAlerts():null;
+	
+	if(this.bulletCount>1){
 			this.isBulletEmpty = false;
-			this.updateBulletCountText(--this.bulletCount);
+			(this.touchDirty)?this.updateBulletCountText(--this.bulletCount):null;
 		} else {
 			this.isBulletEmpty = true;
 			this.gameover = true;
@@ -1024,8 +1160,9 @@ if(!this.gameover && !this.isBulletEmpty){
 
 		// var endPoint = getNextPointFromLine(this.focus.sniper.getPosition(), cc.p(launch_position_x, 0), this.size.height, 1); // USING FOCUS and BUTTON TO LAUNCH BULLET
 		
+		launch_position_x = ( touch.getLocation().x > this.size.width / 2 ) ? 3*this.size.width/10 : 7*this.size.width/10 ;
 
-		if(event!=null){
+		if(event!=null && this.touchDirty){
 
 			bullet.attr({
 				x 		: launch_position_x,
@@ -1059,39 +1196,44 @@ if(!this.gameover && !this.isBulletEmpty){
 
 			// this.bulletTravel();
 			this.scheduleUpdate();
+
 		} else {  // BULLET FROM ALIEN
 
-			bullet.attr({
-				x 		: touch.x,
-		    	y 		: touch.y-50,
-				time 	: BULLET.TRAVEL_TIME,
-				scale 	: 0.15
-				// strength: 3
-			});
+			// bullet.attr({
+			// 	x 		: touch.x,
+		    // 	y 		: touch.y-50,
+			// 	time 	: BULLET.TRAVEL_TIME,
+			// 	scale 	: 0.15
+			// 	// strength: 3
+			// });
 
-			var endPoint = getNextPointFromLine(touch, cc.p(launch_position_x, 0), 0, 1); // USING ALIEN POSITION TO LAUNCH BULLET
-			cc.log("ENDPOINT :: ", endPoint);
-			this.addChild(bullet, 1);
-			// cc.log(bullet, cc.p( this.touch.getLocation().x, this.touch.getLocation().y ));
-			var travelTime = bullet.time;//self.touch.y / (bullet.time * 1000);
-			// cc.log("Bullet Travel Time :: ",  travelTime);
-			bullet.runAction(
-				new cc.Sequence(
-					// cc.MoveTo.create( 0.05, cc.p( launch_position_x, 60 ) ),
-					// cc.MoveTo.create( travelTime, cc.p( self.touch.getLocation().x, self.touch.getLocation().y ) ),
-					cc.MoveTo.create( travelTime, endPoint),
-					cc.FadeTo.create(0.15, 0)
-				)
-			);
+			// var endPoint = getNextPointFromLine(touch, cc.p(launch_position_x, 0), 0, 1); // USING ALIEN POSITION TO LAUNCH BULLET
+			// cc.log("ENDPOINT :: ", endPoint);
+			// this.addChild(bullet, 1);
+			// // cc.log(bullet, cc.p( this.touch.getLocation().x, this.touch.getLocation().y ));
+			// var travelTime = bullet.time;//self.touch.y / (bullet.time * 1000);
+			// // cc.log("Bullet Travel Time :: ",  travelTime);
+			// bullet.runAction(
+			// 	new cc.Sequence(
+			// 		// cc.MoveTo.create( 0.05, cc.p( launch_position_x, 60 ) ),
+			// 		// cc.MoveTo.create( travelTime, cc.p( self.touch.getLocation().x, self.touch.getLocation().y ) ),
+			// 		cc.MoveTo.create( travelTime, endPoint),
+			// 		cc.FadeTo.create(0.15, 0)
+			// 	)
+			// );
 
-			this.bulletsArray.push(bullet);
-			this.bullet = bullet;
+			// this.bulletsArray.push(bullet);
+			// this.bullet = bullet;
 
 
-			// this.createShotFocus(touch.getLocation());
+			// // this.createShotFocus(touch.getLocation());
 
-			// this.bulletTravel();
-			this.scheduleUpdate();
+			// // this.bulletTravel();
+			// this.scheduleUpdate();
+		}
+
+		if(this.touchDirty == false){
+			this.touchDirty = true;
 		}
 				// this.unscheduleUpdate();
 
@@ -1118,9 +1260,9 @@ if(!this.gameover && !this.isBulletEmpty){
 	},
 
 	bulletTravel: function(){
-			if(!this.timeup){
+			if(!this.timeup && this.touchDirty){
 				self.bulletHide = true;
-				cc.log("SCHEDULE");
+				// cc.log("SCHEDULE");
 				this.scheduleUpdate();
 			// }else{
 			// 	cc.log("UNSCHEDULE");
@@ -1168,7 +1310,7 @@ if(!this.gameover && !this.isBulletEmpty){
 		var power = (number==ALIEN.LIFE_OBJ)?1:(1 + Math.round(Math.random() * (ALIEN.MAX_POWER - ALIEN.MIN_POWER) + ALIEN.MIN_POWER));
 		var rotate = (number==ALIEN.LIFE_OBJ)?90:0;
 		var point = this.getPoints(number);
-
+		// cc.log("point :: ", point);
 		this.alien = new cc.Sprite.create(aliens[number]);
 		if(number>6&&number<10){
 			this.alien.attr({
@@ -1207,7 +1349,7 @@ if(!this.gameover && !this.isBulletEmpty){
 
 		this.alien.points = (point==1)?power:point;
 
-		cc.log("POINTS :: ", this.alien.points);
+		// cc.log("POINTS :: ", this.alien.points);
 
 		if(this.alienZigzagMovement || this.alienAttackMovement){ // level 3
 			this.alienLinearMovement 	  	= false;
@@ -1279,23 +1421,23 @@ if(!this.gameover && !this.isBulletEmpty){
 	getRandomPosition(x){
 		// this.position = !this.position;
 		if(this.position){
-			cc.log("New Pos: ", Math.round(Math.random() * (this.size.width - this.size.width/10) + this.size.width/10));
+			// cc.log("New Pos: ", Math.round(Math.random() * (this.size.width - this.size.width/10) + this.size.width/10));
 			return Math.round(Math.random() * (this.size.width - this.size.width/10) + this.size.width/10);
 		}
 	},
 
 	getPoints(n){
 
-		if(n>0&&n<6){
+		if(n>=0&&n<6){
 			return 1;
 		} else if (n==6){
 			return -10;
 		} else if (n>6&&n<9){
 			return -(n-4);
-		} else if (n>=9){
+		} else if (n>=9&&n<=14){
 			return CONSTANT.PORTION+n;
 		} else {
-			cc.log("ALIENs mis leaded");
+			cc.log("Error: ALIENs mis-leaded :: ", n);
 			return 0;
 		}
 
@@ -1573,6 +1715,8 @@ var InfoLayer = cc.Layer.extend({
 	gameDirt 	: false,
 	titleText 	: "",
 	subText 	: "",
+	master_color: cc.color(255, 255, 255),
+	master_font : "BonvenoCF",
 	ctor		: function(){
 		
 		this._super();
@@ -1582,7 +1726,8 @@ var InfoLayer = cc.Layer.extend({
 		if(!this.gameDirt){
 			this.gameDirt = true;
 			this.titleText = "Invade the Space";
-			this.subText = "\n \n IMP: Use one bullet per kill \n \n (Note: This Game is under construction) \n \n Click to Play ";
+			// this.subText = "\n \n IMP: Use one bullet per kill \n \n (Note: This Game is under construction) \n \n Click to Play ";
+			// this.subText = "\n Click to Play ";
 		} else {
 			this.gameDirt = false;
 			this.dirty = false;
@@ -1595,14 +1740,14 @@ var InfoLayer = cc.Layer.extend({
 		this.sprite.setScale(1);
 		this.addChild(this.sprite, 0);
 
-		var label = cc.LabelTTF.create(this.titleText, "Courier New", 50, cc.TEXT_ALIGNMENT_CENTER);
-		label.setPosition(0, 60);
-		label.setColor(cc.color(0, 0, 0));
+		var label = cc.LabelTTF.create(this.titleText, this.master_font, 60, cc.TEXT_ALIGNMENT_CENTER);
+		label.setPosition(0, 120);
+		label.setColor(this.master_color);
 		this.sprite.addChild(label, 1); 
 		
-		var play_text = cc.LabelTTF.create(this.subText, "Courier New", 20, cc.TEXT_ALIGNMENT_CENTER);
+		var play_text = cc.LabelTTF.create(this.subText, this.master_font, 20, cc.TEXT_ALIGNMENT_CENTER);
 		play_text.setPosition(0, -10);
-		play_text.setColor(cc.color(0, 0, 0));
+		play_text.setColor(this.master_color);
 		this.sprite.addChild(play_text, 1); 
 
 		// this.sprite.runAction(cc.MoveTo.create(2, cc.p( size.width/2, size.height/2 + 50 )));
@@ -1613,31 +1758,31 @@ var InfoLayer = cc.Layer.extend({
 			)
 		);
 
-		var infoListener = cc.EventListener.create({
-			    event: cc.EventListener.TOUCH_ONE_BY_ONE,
-		    	swallowTouches: true,
-		    	onTouchBegan: function (touch, event) {
-		    		if(!self.dirty){
-			    		self.dirty = true;
-			    		// cc.log("DIRTY :: ", self.dirty);
-						self.sprite.runAction(
-				    		new cc.Sequence(
-				    			cc.scaleTo(0.1, 0.95),
-								cc.scaleTo(0.2, 0)//,
-								// cc.MoveTo.create(7, cc.p( size.width/2, -size.height/2 ) )
-							)
-						);
-		    		}
-		    	},
-		    	onTouchMoved: function (touch, event) {
-		    		// body...
-		    	},
-		    	onTouchEnded: function (touch, event) {
-		    		// body...
-		    	}
-		    });
+		// var infoListener = cc.EventListener.create({
+		// 	    event: cc.EventListener.TOUCH_ONE_BY_ONE,
+		//     	swallowTouches: true,
+		//     	onTouchBegan: function (touch, event) {
+		//     		if(!self.dirty){
+		// 	    		self.dirty = true;
+		// 	    		// cc.log("DIRTY :: ", self.dirty);
+		// 				self.sprite.runAction(
+		// 		    		new cc.Sequence(
+		// 		    			cc.scaleTo(0.1, 0.95),
+		// 						cc.scaleTo(0.2, 0)//,
+		// 						// cc.MoveTo.create(7, cc.p( size.width/2, -size.height/2 ) )
+		// 					)
+		// 				);
+		//     		}
+		//     	},
+		//     	onTouchMoved: function (touch, event) {
+		//     		// body...
+		//     	},
+		//     	onTouchEnded: function (touch, event) {
+		//     		// body...
+		//     	}
+		//     });
 
-		cc.eventManager.addListener(infoListener.clone(), play_text);
+		// cc.eventManager.addListener(infoListener.clone(), play_text);
 
 		return true;
 	}

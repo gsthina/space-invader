@@ -11,11 +11,14 @@ var MainMenuScene = cc.Scene.extend({
     onEnter:function () {
         this._super();
         var layer 	= new MainMenuLayer();
-        var bgLayer = new BackGroundLayer();	
+        var infoLayer = new InfoLayer();
+
+        // var bgLayer = new BackGroundLayer();	
         // var testLayer = new MyLayer();	
-        this.addChild(bgLayer);
+        // this.addChild(bgLayer);
         // this.addChild(testLayer);
         this.addChild(layer);
+        this.addChild(infoLayer);
     }
 });
 
@@ -36,13 +39,11 @@ var GamePlayScene = cc.Scene.extend({
         this._super();
         var layer = new GamePlayLayer();
         var bgLayer = new BackGroundLayer();
-        var infoLayer = new InfoLayer();
         var controlsLayer = new ControlsLayer();
         // var focusLayer = new FocusLayer();
         this.addChild(bgLayer);
         this.addChild(layer);
         this.addChild(controlsLayer);
-        this.addChild(infoLayer);
         // this.addChild(focusLayer);
 
     }
