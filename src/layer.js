@@ -181,10 +181,10 @@ var LevelViewLayer = cc.Layer.extend({
 		
 		var size = cc.winSize;
 
-        var level1Label = new cc.MenuItemFont("EFFORTLESS", this.gotoLevel);
-        var level2Label = new cc.MenuItemFont("MODERATE", this.gotoLevel);
-        var level3Label = new cc.MenuItemFont("IMPENETRABLE", this.gotoLevel);
-        var level4Label = new cc.MenuItemFont("Hardest", this.gotoLevel);
+        var level1Label = new cc.MenuItemFont(CONSTANT.LEVEL.ONE, this.gotoLevel);
+        var level2Label = new cc.MenuItemFont(CONSTANT.LEVEL.TWO, this.gotoLevel);
+        var level3Label = new cc.MenuItemFont(CONSTANT.LEVEL.THREE, this.gotoLevel);
+        var level4Label = new cc.MenuItemFont(CONSTANT.LEVEL.FOUR, this.gotoLevel);
 
         level1Label.setPosition(cc.p(size.width/2, (size.height/6)*4));
         level2Label.setPosition(cc.p(size.width/2, (size.height/6)*3));
@@ -199,23 +199,24 @@ var LevelViewLayer = cc.Layer.extend({
 	gotoLevel: function(level){
 		level = level.string;
 		var levelMeta = null;
+		cc.log(level);
 		switch(level){
-			case 'Easy': {
+			case CONSTANT.LEVEL.ONE: {
 				// cc.log("LevelViewLayer :: gotoLevel() :: ", level);
 				GAME.LEVEL = '1';
 				break;
 			};
-			case 'Medium': {
+			case CONSTANT.LEVEL.TWO: {
 				// cc.log("LevelViewLayer :: gotoLevel() :: ", level);
 				GAME.LEVEL = '2';
 				break;
 			};
-			case 'Hard': {
+			case CONSTANT.LEVEL.THREE: {
 				// cc.log("LevelViewLayer :: gotoLevel() :: ", level);
 				GAME.LEVEL = '3';
 				break;
 			};
-			case 'Hardest': {
+			case CONSTANT.LEVEL.FOUR: {
 				// cc.log("LevelViewLayer :: gotoLevel() :: ", level);
 				GAME.LEVEL = '4';
 				break;
@@ -600,13 +601,18 @@ var GamePlayLayer = cc.Layer.extend({
 
 
 	getLevelInfo: function(){
+		this.alienLinearMovement = false;
+		this.alienRandomLinearMovement = false;
+		this.alienZigzagMovement = false;
+		this.alienAttackMovement = false;
 		// cc.log("GamePlayLayer :: getLevelInfo()");
+		cc.log("GAME.LEVEL : ", GAME.LEVEL);
 		switch(GAME.LEVEL){
 			case '1': this.alienLinearMovement 			= true; break;
 			case '2': this.alienRandomLinearMovement 	= true; break;
 			case '3': this.alienZigzagMovement 			= true; break;
 			case '4': this.alienAttackMovement 			= true; break;
-			default : cc.log("GAME.LEVEL : ", GAME.LEVEL); break;
+			default : cc.log("Error: GAME.LEVEL : ", GAME.LEVEL); break;
 		};
 	},
 

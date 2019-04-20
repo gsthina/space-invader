@@ -54,7 +54,13 @@ var CONSTANT = {
 	BULLET_BOOST_TEXT_10: "+5 Bullets",
 	ALIEN_FREQ_DEC_TEXT : "Slow down",
 	HEALTH_INCREASED_HALF_TEXT : "Health++",
-	ALIEN_FREW_INC_TEXT : "Speed up"
+	ALIEN_FREW_INC_TEXT : "Speed up",
+	LEVEL : {
+				ONE 	: "EFFORTLESS",
+				TWO 	: "MODERATE",
+				THREE 	: "IMPENETRABLE",
+				FOUR 	: "Hardest"
+			}
 };
 
 var POWER = {
