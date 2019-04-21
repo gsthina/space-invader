@@ -73,9 +73,8 @@ var MainMenuLayer = cc.Layer.extend({
         return true;
     },
 
-    instructions(){
+    instructions: function(){
     	cc.log("Instructions Clicked");
-    	
     },
 
     showAliens: function(){
@@ -199,7 +198,6 @@ var LevelViewLayer = cc.Layer.extend({
 	gotoLevel: function(level){
 		level = level.string;
 		var levelMeta = null;
-		cc.log(level);
 		switch(level){
 			case CONSTANT.LEVEL.ONE: {
 				// cc.log("LevelViewLayer :: gotoLevel() :: ", level);
@@ -592,7 +590,7 @@ var GamePlayLayer = cc.Layer.extend({
 	master_color: cc.color(255, 255, 255),
 	master_font : "BonvenoCF",
 
-	checkGameMode(){
+	checkGameMode: function(){
 		// this.nightMode = cc.LayerColor.create(new cc.Color(0,0,0,150), 640, 960); // Night Mode
 		this.nightMode = cc.LayerColor.create(new cc.Color(255,255,255,150), 640, 960); // Day Mode
 		this.addChild(this.nightMode);
@@ -606,7 +604,7 @@ var GamePlayLayer = cc.Layer.extend({
 		this.alienZigzagMovement = false;
 		this.alienAttackMovement = false;
 		// cc.log("GamePlayLayer :: getLevelInfo()");
-		cc.log("GAME.LEVEL : ", GAME.LEVEL);
+		// cc.log("GAME.LEVEL : ", GAME.LEVEL);
 		switch(GAME.LEVEL){
 			case '1': this.alienLinearMovement 			= true; break;
 			case '2': this.alienRandomLinearMovement 	= true; break;
@@ -1185,6 +1183,7 @@ if(!this.gameover && !this.isBulletEmpty){
 			// cc.log(bullet, cc.p( this.touch.getLocation().x, this.touch.getLocation().y ));
 			var travelTime = bullet.time;// self.touch.getLocation().y / (bullet.time * 1000);
 			// cc.log("Bullet Travel Time :: ",  travelTime);
+
 			bullet.runAction(
 				new cc.Sequence(
 					cc.MoveTo.create( 0.05, cc.p( launch_position_x, 60 ) ),
@@ -1424,7 +1423,7 @@ if(!this.gameover && !this.isBulletEmpty){
 
 	position: true,
 
-	getRandomPosition(x){
+	getRandomPosition: function(x){
 		// this.position = !this.position;
 		if(this.position){
 			// cc.log("New Pos: ", Math.round(Math.random() * (this.size.width - this.size.width/10) + this.size.width/10));
@@ -1432,7 +1431,7 @@ if(!this.gameover && !this.isBulletEmpty){
 		}
 	},
 
-	getPoints(n){
+	getPoints: function(n){
 
 		if(n>=0&&n<6){
 			return 1;
