@@ -409,7 +409,7 @@ var GamePlayLayer = cc.Layer.extend({
 	healthLabel: "",
 	controls: null,
 	button: null,
-
+	size : cc.winSize,
 	ctor: function(){
 
 		this._super();
@@ -419,6 +419,7 @@ var GamePlayLayer = cc.Layer.extend({
 		this.getLevelInfo();
 
 		var size = cc.winSize;
+		this.size = size;
 
 		// Reference Variable 
 
@@ -1033,11 +1034,11 @@ var GamePlayLayer = cc.Layer.extend({
 	alertText: null,
 
 	displayAlertMessage: function(msg){
-
+		var size = cc.winSize;
 		this.space_overlay = new cc.Sprite(res.space_overlay_img);
 		this.space_overlay.attr({
-			x: this.size.width / 2,
-			y: this.size.height / 2
+			x: size.width / 2,
+			y: size.height / 2
 			// scale: 3,
 			// rotation: 180
 		});
@@ -1053,7 +1054,6 @@ var GamePlayLayer = cc.Layer.extend({
 			)
 		);
 
-		var size = cc.winSize;
 		this.alertText = cc.LabelTTF.create(msg, this.master_font, 50, cc.TEXT_ALIGNMENT_CENTER);
 		this.alertText.setPosition(size.width / 2, size.height/2 + 50);
 		this.alertText.setScale(0);
